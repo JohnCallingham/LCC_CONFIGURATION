@@ -1,5 +1,7 @@
 #include "configurationMenu.h"
 
+extern const char* credentials;
+
 ConfigurationMenu::ConfigurationMenu(NodeID defaultNodeID, uint8_t defaultFactoryReset) {
     // Store the default values.
     this->nodeID = defaultNodeID;
@@ -203,7 +205,31 @@ void ConfigurationMenu::doConfigureNodeID() {
 }
 
 void ConfigurationMenu::doConfigureWiFi() {
-  Serial.printf("\n Configuring WiFi");
+  Serial.printf("\nConfiguring WiFi");
+
+  // Deserialise the list of all SSIDs in the credentials.h file.
+  DeserializationError error = deserializeJson(doc, credentials);
+  if (error) {
+    Serial.printf("\n%6ld WiFi_Multi: Error deserialising credentials JSON: %s", millis(), error.f_str());
+    return;
+  }
+
+  // Display a list of SSIDs from credentials.h
+  Serial.printf("\nAvailable SSIDs;-");
+  Serial.printf("\n    SSID      Name");
+  const char* name;
+  const char* ssid;
+  int lineNumber = 0;
+  JsonArray jarray = doc.as<JsonArray>();
+  for (JsonObject elem : jarray) {
+    lineNumber++;
+    name = elem["name"];
+    ssid = elem["ssid"];
+    Serial.printf("\n %d. %-10s%-10s", lineNumber, ssid, name);
+    }
+
+
+
 
 }
 

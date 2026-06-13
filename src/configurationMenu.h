@@ -3,6 +3,8 @@
 
 #include <Preferences.h>
 #include "NodeID.h"
+#include "ArduinoJson.h"
+//#include "credentials.h"
 
 class ConfigurationMenu {
   public:
@@ -24,6 +26,10 @@ class ConfigurationMenu {
 
     NodeID nodeID; // The default node id.
     uint8_t factoryResetRequired; // The default value (0 or 1). 1 means do a factory reset at the next restart.
+
+    // Used to deserialise the credentials JSON.
+    JsonDocument doc;
+
 };
 
 #endif
