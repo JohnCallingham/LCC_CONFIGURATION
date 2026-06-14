@@ -1,7 +1,5 @@
 #include "configurationMenu.h"
 
-extern const char* credentials;
-
 ConfigurationMenu::ConfigurationMenu(NodeID defaultNodeID, uint8_t defaultFactoryReset) {
     // Store the default values.
     this->nodeID = defaultNodeID;
@@ -114,6 +112,41 @@ uint8_t ConfigurationMenu::getFactoryReset() {
   return reset_factory_defaults;
 }
 
+// const char* ConfigurationMenu::getSSID() {
+String ConfigurationMenu::getSSID() {
+  // Check if a preferences namespace called 'WiFi' exists.
+  if (! preferences.begin("WiFi", true)) {
+    Serial.printf("\nPreferences namespace WiFi does not exist");
+    return ("RPi-JMRI"); // Return the default SSID.
+  }
+  
+  Serial.printf("\nPreferences namespace WiFi does exist");
+
+  // Return the SSID from preferences.
+  String SSID = preferences.getString("SSID");
+
+  preferences.end();
+
+  return SSID;
+}
+
+String ConfigurationMenu::getPassword() {
+  // Check if a preferences namespace called 'WiFi' exists.
+  if (! preferences.begin("WiFi", true)) {
+    Serial.printf("\nPreferences namespace WiFi does not exist");
+    return ("rpI-jmri"); // Return the default password.
+  }
+
+  Serial.printf("\nPreferences namespace WiFi does exist");
+
+  // Return the password from preferences.
+  String password = preferences.getString("password");
+
+  preferences.end();
+
+  return password;
+}
+
 int ConfigurationMenu::waitForEnterOrTimeout(long timeout) {
   int c = 0;
   long timeoutTime = millis() + timeout;
@@ -183,6 +216,7 @@ void ConfigurationMenu::doConfigureNodeID() {
     return;
   }
 
+  // Write the node ID to preferences.
   preferences.begin("NodeID");
   preferences.putUChar("ID0", 5);
   preferences.putUChar("ID1", 1);
@@ -195,6 +229,7 @@ void ConfigurationMenu::doConfigureNodeID() {
 
   Serial.printf("\n Configured Node ID");
 
+  // Cause a factory reset to be performed at the next restart.
   preferences.begin("Reset");
   preferences.putUChar("Reset", 1);
   preferences.end();
@@ -205,6 +240,8 @@ void ConfigurationMenu::doConfigureNodeID() {
 }
 
 void ConfigurationMenu::doConfigureWiFi() {
+  String input = "";
+
   Serial.printf("\nConfiguring WiFi");
 
   // Deserialise the list of all SSIDs in the credentials.h file.
@@ -226,11 +263,46 @@ void ConfigurationMenu::doConfigureWiFi() {
     name = elem["name"];
     ssid = elem["ssid"];
     Serial.printf("\n %d. %-10s%-10s", lineNumber, ssid, name);
+  }
+
+  Serial.printf("\nEnter a line number (1 to %d): ", lineNumber);
+
+  input = getStringUntilEnter();
+  
+  // Check for no input.
+  if (input.length() == 0) {
+    return;
+  }
+
+  // Check for a valid input (i.e. 0 - lineNumber).
+  int inputInt = input.toInt();
+  if ((inputInt < 0) || (inputInt > lineNumber)) {
+    return;
+  }
+
+  // Get the SSID and password from JSON for the selected line number.
+  const char* selectedSSID;
+  const char* selectedPassword;
+  lineNumber = 0;
+  for (JsonObject elem : jarray) {
+    lineNumber++;
+
+    if (lineNumber == inputInt) {
+      selectedSSID = elem["ssid"];
+      selectedPassword = elem["password"];
+      break;
     }
+  }
 
+  Serial.printf("\nselected SSID=%s, selected passord=%s", selectedSSID, selectedPassword);
 
+  // Write the WiFi credentials to preferences.
+  preferences.begin("WiFi");
+  preferences.putString("SSID", selectedSSID);
+  preferences.putString("password", selectedPassword);
+  preferences.end();
 
-
+  Serial.printf("\n Configured WiFi");
 }
 
 void ConfigurationMenu::doResetFactoryDefaults() {
