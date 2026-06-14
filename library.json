@@ -1,4 +1,8 @@
 {
 "name": "LCC_CONFIGURATION",
-"version": "0.1.1"
+"version": "0.1.1",
+"dependencies":
+  {
+    "ArduinoJson": "bblanchon/ArduinoJson@^7.4.1"
+  }
 }
