@@ -200,6 +200,15 @@ void ConfigurationMenu::doConfigureNodeID() {
   String input = "";
 
   Serial.printf("\n Configuring Node ID");
+  preferences.begin("NodeID", true);
+  Serial.printf("\n Current Node ID stored in Preferences: 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X", 
+    preferences.getUChar("ID0"),
+    preferences.getUChar("ID1"),
+    preferences.getUChar("ID2"),
+    preferences.getUChar("ID3"),
+    preferences.getUChar("ID4"),
+    preferences.getUChar("ID5"));
+  preferences.end();
   Serial/printf("\n Changing the node ID will force a factory reset");
   Serial.printf("\nEnter a value for the 6th Node ID value (0 to 255): ");
 
