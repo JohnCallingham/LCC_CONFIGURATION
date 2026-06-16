@@ -209,7 +209,7 @@ void ConfigurationMenu::doConfigureNodeID() {
     preferences.getUChar("ID4"),
     preferences.getUChar("ID5"));
   preferences.end();
-  Serial/printf("\n Changing the node ID will force a factory reset");
+  Serial.printf("\n Changing the node ID will force a factory reset");
   Serial.printf("\nEnter a value for the 6th Node ID value (0 to 255): ");
 
   input = getStringUntilEnter();
