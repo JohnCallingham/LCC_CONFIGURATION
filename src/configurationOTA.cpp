@@ -1,7 +1,5 @@
 #include "configurationOTA.h"
 
-// #define SSID_CONNECTION_TIMEOUT 1000; // 1000 mS
-
 int ConfigurationOTA::getConfiguration(const char* credentials) {
   // Connect to an SSID which has a "configuration_url" stored.
 
@@ -52,14 +50,29 @@ int ConfigurationOTA::getConfiguration(const char* credentials) {
               strncpy(configurationNodeID, elemConfiguration["NodeID"], sizeof(configurationNodeID));
               strncpy(configurationVersion, elemConfiguration["Version"], sizeof(configurationVersion));
               strncpy(configurationUpdateURL, elemConfiguration["UpdateURL"], sizeof(configurationUpdateURL));
+              strncpy(configurationJMRIname, elemConfiguration["JMRI_name"], sizeof(configurationJMRIname));
+
+              // Look up the SSID and Password from credentials.h for JMRI_name.
+              // Step through all credential records looking for one which matches JMRI_name.
+              for (JsonObject elemCredential : docCredentials.as<JsonArray>()) {
+                if (strcmp(elemCredential["name"], configurationJMRIname) == 0) {
+                  strncpy(configurationJMRIssid, elemCredential["ssid"], sizeof(configurationJMRIssid));
+                  strncpy(configurationJMRIpassword, elemCredential["password"], sizeof(configurationJMRIpassword));
+
+                  break; // No need to try any other credential records.
+                }
+              }
             }
           }
-
           break; // No need to try any other SSIDs.
         }
       }
     }
   }
+
+  // We've finished downloading the json configuration file.
+  Serial.printf("\nDisconnecting from configuration WiFi");
+  WiFi.disconnect(); 
 
   return 0;
 }

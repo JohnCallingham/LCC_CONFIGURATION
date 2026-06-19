@@ -36,6 +36,8 @@ class ConfigurationOTA {
     NodeID nodeID();
     const char* version() { return configurationVersion; }
     const char* updateURL() { return configurationUpdateURL; }
+    const char* jmriSSID() { return configurationJMRIssid; }
+    const char* jmriPassword() { return configurationJMRIpassword; }
 
   private:
     int connectWiFi(String ssid, String password);
@@ -51,6 +53,9 @@ class ConfigurationOTA {
     char configurationNodeID[20] = "";
     char configurationVersion[20] = "";
     char configurationUpdateURL[200] = "";
+    char configurationJMRIname[50] = "";
+    char configurationJMRIssid[50] = "";
+    char configurationJMRIpassword[50] = "";
 };
 
 #endif
