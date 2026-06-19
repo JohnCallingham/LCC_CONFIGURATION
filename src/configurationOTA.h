@@ -31,7 +31,9 @@
 class ConfigurationOTA {
   public:
     ConfigurationOTA(long ssidTimeoutmS) { this->ssidTimeoutmS = ssidTimeoutmS; }
-    int getConfiguration(const char* credentials);
+    int downloadConfiguration(const char* credentials);
+
+    // Getter methods
     const char* board() { return configurationBoard; }
     NodeID nodeID();
     const char* version() { return configurationVersion; }
@@ -40,6 +42,11 @@ class ConfigurationOTA {
     const char* jmriPassword() { return configurationJMRIpassword; }
 
   private:
+    JsonDocument docCredentials;
+    JsonDocument docConfigurations;
+
+    void processCredential(JsonObject elemCredential);
+    void processConfiguration(JsonObject elemConfiguration);
     int connectWiFi(String ssid, String password);
     String downloadJsonConfigurationFile(String jsonURL);
     int downloadJson(const char* URL, String& payload);
@@ -54,6 +61,8 @@ class ConfigurationOTA {
     char configurationVersion[20] = "";
     char configurationUpdateURL[200] = "";
     char configurationJMRIname[50] = "";
+
+    // The values from the json credentials file.
     char configurationJMRIssid[50] = "";
     char configurationJMRIpassword[50] = "";
 };
