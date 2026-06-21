@@ -3,9 +3,9 @@ A software component which can be used as part of an OpenLCB/LCC node.
 
 It has been developed to allow a user to configure multiple nodes prior to and after deployment without needing physical access to the node.
 
-There are two classes;-
-1. **ConfigurationPreferences**. Provides support methods to allow various configuration data to be stored and retrieved using the Arduino Preferences system.
-2. **ConfigurationOTA**. Allows a configuration file in json format to be hosted on a web server, external to the nodes, which provides a way for a user to alter various configuration properties of multiple nodes without needing physical access to the nodes.
+There are two parts;-
+1. **ConfigurationOTA**. A class which allows a configuration file in json format to be hosted on a web server, external to the nodes, which provides a way for a user to alter various configuration properties of multiple nodes without needing physical access to the nodes.
+2. **ConfigurationPreferences**. A namespace which provides support methods to allow various configuration data to be stored and retrieved using the Arduino Preferences system.
 
 Every time a node starts the process is as follows;-
 1. The json formatted contents of the hard coded credentials.h file is read. This file contains details of one or more SSIDs to which the node may be able to connect.
