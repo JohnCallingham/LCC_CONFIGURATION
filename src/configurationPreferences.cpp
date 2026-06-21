@@ -8,7 +8,7 @@ namespace ConfigurationPreferences {
     preferences.begin(NAMESPACE_NODEID, false);
     bool doesExist = preferences.isKey("ID0");
     if (doesExist == false) {
-      // The NodeID preferences namespace does not exist.
+      // The NAMESPACE_NODEID preferences namespace does not exist.
       return defaultNodeID;
     }
 
@@ -25,39 +25,39 @@ namespace ConfigurationPreferences {
   }
 
   int getFactoryReset() {
-    if (! preferences.begin(NAMESPACE_FACTORY_RESET, true)) {
-      // The factory reset preferences namespace does not exist.
-      return 0;
-    }
+    // if (! preferences.begin(NAMESPACE_FACTORY_RESET, true)) {
+    //   // The factory reset preferences namespace does not exist.
+    //   return 0;
+    // }
 
     preferences.begin(NAMESPACE_FACTORY_RESET, true);
-    int factoryReset = preferences.getUChar("Reset");
+    int factoryReset = preferences.getUChar("Reset", 0);
     preferences.end();
 
     return factoryReset;
   }
 
   String getWiFiSSID() {
-    if (! preferences.begin(NAMESPACE_WIFI, true)) {
-      // The WiFi preferences namespace does not exist.
-      return "";
-    }
+    // if (! preferences.begin(NAMESPACE_WIFI, true)) {
+    //   // The WiFi preferences namespace does not exist.
+    //   return "";
+    // }
 
     preferences.begin(NAMESPACE_WIFI, true);
-    String ssid = preferences.getString("SSID");
+    String ssid = preferences.getString("SSID", "");
     preferences.end();
 
     return ssid;
   }
 
   String getWiFiPassword() {
-    if (! preferences.begin(NAMESPACE_WIFI, true)) {
-      // The WiFi preferences namespace does not exist.
-      return "";
-    }
+    // if (! preferences.begin(NAMESPACE_WIFI, true)) {
+    //   // The WiFi preferences namespace does not exist.
+    //   return "";
+    // }
 
     preferences.begin(NAMESPACE_WIFI, true);
-    String password = preferences.getString("password");
+    String password = preferences.getString("password", "");
     preferences.end();
 
     return password;

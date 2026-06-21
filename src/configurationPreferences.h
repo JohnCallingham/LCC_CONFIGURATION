@@ -18,9 +18,9 @@
 namespace ConfigurationPreferences {
 
   NodeID getNodeID(NodeID defaultNodeID);
-  static int getFactoryReset();
-  static String getWiFiSSID();
-  static String getWiFiPassword();
+  int getFactoryReset();
+  String getWiFiSSID();
+  String getWiFiPassword();
   void putNodeID(NodeID nodeID);
   void putFactoryReset(int factoryReset);
   void putWiFiSSID(String wifiSSID);

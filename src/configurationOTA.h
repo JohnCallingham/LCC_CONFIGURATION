@@ -40,6 +40,7 @@ class ConfigurationOTA {
     const char* updateURL() { return configurationUpdateURL; }
     const char* jmriSSID() { return configurationJMRIssid; }
     const char* jmriPassword() { return configurationJMRIpassword; }
+    const char* jmriName() { return configurationJMRIname; }
 
   private:
     JsonDocument docCredentials;

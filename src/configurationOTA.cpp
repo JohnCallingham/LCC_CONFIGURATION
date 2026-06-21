@@ -3,12 +3,12 @@
 int ConfigurationOTA::downloadConfiguration(const char* credentials) {
   // Connect to an SSID which has a "configuration_url" stored.
 
-  Serial.printf("\n%6ld credentials=%s", millis(), credentials);
+  Serial.printf("\n%6ld contents of credentials.h;-%s", millis(), credentials);
 
   // Deserialise the json credentials file.
   DeserializationError errorCredentials = deserializeJson(docCredentials, credentials);
   if (errorCredentials != DeserializationError::Ok) {
-    Serial.printf("\nError deserialising credentials");
+    Serial.printf("\n%6ld Error deserialising credentials", millis());
     return -1;
   }
 
@@ -22,8 +22,17 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials) {
   }
 
   // We've finished downloading the json configuration file.
-  Serial.printf("\n%6ld Disconnecting from configuration WiFi: %s", millis(), WiFi.SSID());
-  WiFi.disconnect(); 
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.printf("\n%6ld Disconnecting from configuration WiFi: %s", millis(), WiFi.SSID());
+    WiFi.disconnect(); 
+  }
+
+  // === Only display these lines if we have downloaded a json configuration file ===
+  Serial.printf("\n%6ld Board = %s", millis(), this->board());
+  Serial.printf("\n%6ld NodeID = ", millis()); this->nodeID().print();
+  Serial.printf("\n%6ld Version = %s", millis(), this->version());
+  Serial.printf("\n%6ld UpdateURL = %s", millis(), this->updateURL());
+  Serial.printf("\n%6ld JMRIname = %s", millis(), this->jmriName());
 
   return 0;
 }
@@ -40,7 +49,7 @@ int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) 
   String payload = downloadJsonConfigurationFile(elemCredential["configuration_url"]);
 
   if (payload == "") {
-    Serial.printf("\nUnable to download json configuration file");
+    Serial.printf("\n%6ld Unable to download json configuration file", millis());
     return -1;
   }
 
@@ -49,7 +58,7 @@ int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) 
   // Deserialise the json configuration file.
   DeserializationError errorConfigurations = deserializeJson(docConfigurations, payload.c_str());
   if (errorConfigurations != DeserializationError::Ok) {
-    Serial.printf("\nError deserialising configuration");
+    Serial.printf("\n%6ld Error deserialising configuration", millis());
     return -1; // Try other SSIDs.
   }
   Serial.printf("\n%6ld Deserialised json configuration file", millis());
@@ -133,7 +142,7 @@ String ConfigurationOTA::downloadJsonConfigurationFile(String jsonURL) {
   if (httpResponseCode != 200)
       return "";
   
-  Serial.printf("\n%6ld Payload=\n%s", millis(), Payload.c_str());
+  Serial.printf("\n%6ld jsonURL contents;-\n%s", millis(), Payload.c_str());
 
   return Payload;
 }
