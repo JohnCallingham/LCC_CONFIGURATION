@@ -22,6 +22,57 @@ Every time a node starts the process is as follows;-
 12. If the user wishes that all the node's events IDs are recalculated to reflect the new Node ID, then the user should select the 'Clear Everything back to Factory Defaults' option in JMRI's CLI editor before restarting the node.
 13. The json configuration file also contains a URL to firmware which can be used to remotely update a node's firmware.
 
+## Example credentials.h file
+
+```json
+const char* credentials = R"===(
+[
+  {
+    "name":"RPi",
+    "ssid":"RPi-JMRI",
+    "password":"rpI-jmri"
+  },
+  {
+    "name":"London",
+    "ssid":"BT-XXXXPC",
+    "password":"xyzzy",
+    "configuration_url":"http://diskstation2/LCC_Configuration/Configurations.json"
+  },
+  {
+    "name":"Dorset",
+    "ssid":"BT-XXXXQF",
+    "password":"xyzzy",
+    "configuration_url":"http://diskstation3/LCC_Configuration/Configurations.json"
+  }
+]
+)===";
+```
+
+## Example json configuration file
+
+```json
+{
+  "Configurations":
+  [
+    {
+      "MAC_Address": "3C:84:27:C4:A7:B8",
+      "Board": "ESP32_TOTI",
+      "NodeID": "05.01.01.01.91.1E",	
+      "Version": "1.0.0",
+      "UpdateURL": "https://example.com/images/Basic-OTA-Example-ESP32_DEV-1.0.0.bin",
+      "JMRI_name": "London"
+    },
+    {
+      "MAC_Address": "30:C6:F7:24:AC:38",
+      "Board": "ESP32_DEV",
+      "NodeID": "",	
+      "Version": "1.0.0",
+      "UpdateURL": "https://example.com/images/Basic-OTA-Example-ESP32_DEV-1.0.0.bin",
+      "JMRI_name": "London"
+    }
+  ]
+}
+```
 
 
 

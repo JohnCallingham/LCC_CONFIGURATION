@@ -4,8 +4,6 @@
  *  - Factory reset value (0 or 1)
  *  - Current WiFi SSID and password
  *  - ?? info re server pull configuration ??
- * 
- * Needs to work with a blank EEPROM, i.e. when there are no Preferences namespaces stored.
  */
 #include <Arduino.h>
 #include <Preferences.h>
@@ -19,8 +17,9 @@ namespace ConfigurationPreferences {
 
   NodeID getNodeID(NodeID defaultNodeID);
   int getFactoryReset();
-  String getWiFiSSID();
-  String getWiFiPassword();
+  const char*  getWiFiSSID();
+  const char* getWiFiPassword();
+
   void putNodeID(NodeID nodeID);
   void putFactoryReset(int factoryReset);
   void putWiFiSSID(String wifiSSID);

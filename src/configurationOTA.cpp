@@ -137,14 +137,14 @@ int ConfigurationOTA::connectWiFi(String ssid, String password) {
 
 String ConfigurationOTA::downloadJsonConfigurationFile(String jsonURL) {
   // Returns the JSON text as a String.
-  Serial.printf("\n%6ld Downloading jsonURL: %s", millis(), jsonURL.c_str());
+  Serial.printf("\n%6ld Downloading configuration_url: %s", millis(), jsonURL.c_str());
 
   String Payload;
   int httpResponseCode = downloadJson(jsonURL.c_str(), Payload);
   if (httpResponseCode != 200)
       return "";
   
-  Serial.printf("\n%6ld jsonURL contents;-\n%s", millis(), Payload.c_str());
+  Serial.printf("\n%6ld contents of configuration_url;-\n%s", millis(), Payload.c_str());
 
   return Payload;
 }

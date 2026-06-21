@@ -2,6 +2,8 @@
 
 namespace ConfigurationPreferences {
   Preferences preferences;
+  String ssid;
+  String password;
 
   NodeID getNodeID(NodeID defaultNodeID) {
     // Does the namespace NAMESPACE_NODEID exist?
@@ -37,30 +39,32 @@ namespace ConfigurationPreferences {
     return factoryReset;
   }
 
-  String getWiFiSSID() {
+  // String getWiFiSSID() {
+  const char* getWiFiSSID() {
     // if (! preferences.begin(NAMESPACE_WIFI, true)) {
     //   // The WiFi preferences namespace does not exist.
     //   return "";
     // }
 
     preferences.begin(NAMESPACE_WIFI, true);
-    String ssid = preferences.getString("SSID", "");
+    ssid = preferences.getString("SSID", "");
     preferences.end();
 
-    return ssid;
+    return ssid.c_str();
   }
 
-  String getWiFiPassword() {
+  // String getWiFiPassword() {
+  const char* getWiFiPassword() {
     // if (! preferences.begin(NAMESPACE_WIFI, true)) {
     //   // The WiFi preferences namespace does not exist.
     //   return "";
     // }
 
     preferences.begin(NAMESPACE_WIFI, true);
-    String password = preferences.getString("password", "");
+    password = preferences.getString("password", "");
     preferences.end();
 
-    return password;
+    return password.c_str();
   }
 
   void putNodeID(NodeID nodeID) {
