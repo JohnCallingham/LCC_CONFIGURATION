@@ -11,10 +11,12 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials) {
     Serial.printf("\n%6ld Error deserialising credentials", millis());
     return -1;
   }
+  Serial.printf("\n%6ld Deserialised credentials file", millis());
 
   // Try all SSIDs in the credentials file which have a non zero "configuration_url" value.
   int error = -1;
-  for (JsonObject elemCredential : docCredentials.as<JsonArray>()) {
+  // for (JsonObject elemCredential : docCredentials.as<JsonArray>()) {
+  for (JsonObject elemCredential : docCredentials["Credentials"].as<JsonArray>()) {
     if (! elemCredential["configuration_url"].isNull()) {
       error = processConfigurationCredential(elemCredential);
       if (error == 0) { break; } // No need to try any more SSIDs.
