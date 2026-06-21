@@ -45,8 +45,9 @@ class ConfigurationOTA {
     JsonDocument docCredentials;
     JsonDocument docConfigurations;
 
-    void processCredential(JsonObject elemCredential);
+    int processConfigurationCredential(JsonObject elemCredential);
     void processConfiguration(JsonObject elemConfiguration);
+    void processJMRICredential(JsonObject elemCredential);
     int connectWiFi(String ssid, String password);
     String downloadJsonConfigurationFile(String jsonURL);
     int downloadJson(const char* URL, String& payload);

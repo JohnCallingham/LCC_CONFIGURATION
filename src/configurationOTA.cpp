@@ -3,7 +3,7 @@
 int ConfigurationOTA::downloadConfiguration(const char* credentials) {
   // Connect to an SSID which has a "configuration_url" stored.
 
-  Serial.printf("\ncredentials=%s", credentials);
+  Serial.printf("\n%6ld credentials=%s", millis(), credentials);
 
   // Deserialise the json credentials file.
   DeserializationError errorCredentials = deserializeJson(docCredentials, credentials);
@@ -12,27 +12,26 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials) {
     return -1;
   }
 
-  // Try all SSIDs in the credentials file.
+  // Try all SSIDs in the credentials file which have a non zero "configuration_url" value.
+  int error;
   for (JsonObject elemCredential : docCredentials.as<JsonArray>()) {
-    processCredential(elemCredential);
+    if (! elemCredential["configuration_url"].isNull()) {
+      error = processConfigurationCredential(elemCredential);
+      if (error == 0) { break; } // No need to try any more SSIDs.
+    }
   }
 
   // We've finished downloading the json configuration file.
-  Serial.printf("\nDisconnecting from configuration WiFi");
+  Serial.printf("\n%6ld Disconnecting from configuration WiFi: %s", millis(), WiFi.SSID());
   WiFi.disconnect(); 
 
   return 0;
 }
 
-void ConfigurationOTA::processCredential(JsonObject elemCredential) {
-  // Does this SSID have a non zero "configuration_url" value?
-  if (elemCredential["configuration_url"].isNull()) {
-    return;
-  }
-
+int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) {
   // Try this SSID to see if we can connect to it.
   if (connectWiFi(elemCredential["ssid"], elemCredential["password"]) != 0) {
-    return;
+    return -1;
   }
 
   // Successfully connected to this ssid.
@@ -42,7 +41,7 @@ void ConfigurationOTA::processCredential(JsonObject elemCredential) {
 
   if (payload == "") {
     Serial.printf("\nUnable to download json configuration file");
-    return;
+    return -1;
   }
 
   // We have successfully downloaded the json configuration file.
@@ -51,14 +50,16 @@ void ConfigurationOTA::processCredential(JsonObject elemCredential) {
   DeserializationError errorConfigurations = deserializeJson(docConfigurations, payload.c_str());
   if (errorConfigurations != DeserializationError::Ok) {
     Serial.printf("\nError deserialising configuration");
-    return; // Try other SSIDs.
+    return -1; // Try other SSIDs.
   }
-  Serial.printf("\nDeserialised json configuration file");
+  Serial.printf("\n%6ld Deserialised json configuration file", millis());
 
   // Step through all configurations looking for one which matches our MAC address.
   for (JsonObject elemConfiguration : docConfigurations["Configurations"].as<JsonArray>()) {
     processConfiguration(elemConfiguration);
   }
+
+  return 0;
 }
 
 void ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
@@ -67,7 +68,7 @@ void ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   }
 
   // This is the configuration record for this node.
-  Serial.printf("\nFound matching MAC address");
+  Serial.printf("\n%6ld Found matching MAC address", millis());
 
   // Copy so the data is not lost when the JsonObject goes out of scope.
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
@@ -80,19 +81,29 @@ void ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   // Step through all credential records looking for one which matches JMRI_name.
   for (JsonObject elemCredential : docCredentials.as<JsonArray>()) {
     if (strcmp(elemCredential["name"], configurationJMRIname) == 0) {
-      strncpy(configurationJMRIssid, elemCredential["ssid"], sizeof(configurationJMRIssid));
-      strncpy(configurationJMRIpassword, elemCredential["password"], sizeof(configurationJMRIpassword));
-
+      processJMRICredential(elemCredential);
       break; // No need to try any other credential records.
     }
   }
+}
+
+void ConfigurationOTA::processJMRICredential(JsonObject elemCredential) {
+  strncpy(configurationJMRIssid, elemCredential["ssid"], sizeof(configurationJMRIssid));
+  strncpy(configurationJMRIpassword, elemCredential["password"], sizeof(configurationJMRIpassword));
+
+  // === ??? need to store ssid and passowrd here if they have changed ??? ===
+  // === if ConnectionPreferences was ?static? it could be used here without an object ===
+
+
+  // the original connect to jmri code to use the ssid and password from preferences
+
 }
 
 int ConfigurationOTA::connectWiFi(String ssid, String password) {
   // Timeout if no response.
   long timeoutTime = millis() + ssidTimeoutmS;
 
-  Serial.printf("\nConnecting to %s ", ssid.c_str());
+  Serial.printf("\n%6ld Connecting to %s ", millis(), ssid.c_str());
 
   WiFi.begin(ssid, password);
 	while ((! WiFi.isConnected()) && (millis() < timeoutTime)) {
@@ -101,28 +112,28 @@ int ConfigurationOTA::connectWiFi(String ssid, String password) {
 	}
 
   if (! WiFi.isConnected()) {
-    Serial.printf("\nTimed out connecting to %s", ssid.c_str());
+    Serial.printf("\n%6ld Timed out connecting to %s", millis(), ssid.c_str());
     return -1;
   }
 
   macAddress = WiFi.macAddress();
 
-  Serial.printf("\nConnected to %s", ssid.c_str());
-  Serial.printf("\nMAC address = %s", macAddress.c_str());
+  Serial.printf("\n%6ld Connected to %s", millis(), ssid.c_str());
+  Serial.printf("\n%6ld MAC address = %s", millis(), macAddress.c_str());
 
   return 0;
 }
 
 String ConfigurationOTA::downloadJsonConfigurationFile(String jsonURL) {
   // Returns the JSON text as a String.
-  Serial.printf("\nDownloading jsonURL: %s", jsonURL.c_str());
+  Serial.printf("\n%6ld Downloading jsonURL: %s", millis(), jsonURL.c_str());
 
   String Payload;
   int httpResponseCode = downloadJson(jsonURL.c_str(), Payload);
   if (httpResponseCode != 200)
       return "";
   
-  Serial.printf("\nPayload=\n%s", Payload.c_str());
+  Serial.printf("\n%6ld Payload=\n%s", millis(), Payload.c_str());
 
   return Payload;
 }

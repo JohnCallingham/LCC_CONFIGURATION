@@ -15,19 +15,15 @@
 #define NAMESPACE_FACTORY_RESET "Reset"
 #define NAMESPACE_WIFI "WiFi"
 
-class ConfigurationPreferences {
-  public:
-    ConfigurationPreferences(NodeID defaultNodeID);
-    NodeID getNodeID();
-    int getFactoryReset();
-    String getWiFiSSID();
-    String getWiFiPassword();
-    void putNodeID(NodeID nodeID);
-    void putFactoryReset(int factoryReset);
-    void putWiFiSSID(String wifiSSID);
-    void putWiFiPassword(String wifiPassword);
+namespace ConfigurationPreferences {
 
-  private:
-    Preferences preferences;
-    NodeID defaultNodeID;
-};
+  NodeID getNodeID(NodeID defaultNodeID);
+  static int getFactoryReset();
+  static String getWiFiSSID();
+  static String getWiFiPassword();
+  void putNodeID(NodeID nodeID);
+  void putFactoryReset(int factoryReset);
+  void putWiFiSSID(String wifiSSID);
+  void putWiFiPassword(String wifiPassword);
+    
+}
