@@ -22,33 +22,34 @@ Every time a node starts the process is as follows;-
 12. If the user wishes that all the node's events IDs are recalculated to reflect the new Node ID, then the user should select the 'Clear Everything back to Factory Defaults' option in JMRI's CLI editor before restarting the node.
 13. The json configuration file also contains a URL to firmware which can be used to remotely update a node's firmware.
 
-## Example credentials.h file
+## Example json from credentials.h
 
 ```json
-const char* credentials = R"===(
-[
-  {
-    "name":"RPi",
-    "ssid":"RPi-JMRI",
-    "password":"rpI-jmri"
-  },
-  {
-    "name":"London",
-    "ssid":"BT-XXXXPC",
-    "password":"xyzzy",
-    "configuration_url":"http://diskstation2/LCC_Configuration/Configurations.json"
-  },
-  {
-    "name":"Dorset",
-    "ssid":"BT-XXXXQF",
-    "password":"xyzzy",
-    "configuration_url":"http://diskstation3/LCC_Configuration/Configurations.json"
-  }
-]
-)===";
+{
+  "Credentials":
+  [
+    {
+      "name":"RPi",
+      "ssid":"RPi-JMRI",
+      "password":"rpI-jmri"
+    },
+    {
+      "name":"London",
+      "ssid":"BT-XXXXPC",
+      "password":"xyzzy",
+      "configuration_url":"http://diskstation2/LCC_Configuration/Configurations.json"
+    },
+    {
+      "name":"Dorset",
+      "ssid":"BT-XXXXQF",
+      "password":"xyzzy",
+      "configuration_url":"http://diskstation3/LCC_Configuration/Configurations.json"
+    }
+  ]
+}
 ```
 
-## Example json configuration file
+## Example Configurations.json file
 
 ```json
 {
