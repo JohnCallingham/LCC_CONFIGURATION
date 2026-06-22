@@ -23,7 +23,7 @@ Every time a node starts the process is as follows;-
 13. The json configuration file also contains a URL to firmware which can be used to remotely update a node's firmware.
 
 ## Example json from credentials.h
-
+This file is hard coded into all nodes' software.
 ```json
 {
   "Credentials":
@@ -50,6 +50,7 @@ Every time a node starts the process is as follows;-
 ```
 
 ## Example Configurations.json file
+This file is placed on all web servers that are specified in credentials.h
 
 ```json
 {
@@ -57,22 +58,23 @@ Every time a node starts the process is as follows;-
   [
     {
       "MAC_Address": "3C:84:27:C4:A7:B8",
-      "Board": "ESP32_TOTI",
-      "NodeID": "05.01.01.01.91.1E",	
+      "Board": "ESP32_6TOTI_WiFi",
+      "NodeID": "05.01.01.01.91.1E",
       "Version": "1.0.0",
-      "UpdateURL": "https://example.com/images/Basic-OTA-Example-ESP32_DEV-1.0.0.bin",
+      "UpdateURL": "https://diskstation2/LCC_Configuration/Binary_files/ESP32_6TOTI_WiFi/V1.0.0/firmware.bin",
       "JMRI_name": "London"
     },
     {
-      "MAC_Address": "30:C6:F7:24:AC:38",
-      "Board": "ESP32_DEV",
-      "NodeID": "",	
+      "MAC_Address": "74:4D:BD:A0:FC:5C",
+      "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "NodeID": "05.01.01.01.91.09",
       "Version": "1.0.0",
-      "UpdateURL": "https://example.com/images/Basic-OTA-Example-ESP32_DEV-1.0.0.bin",
+      "UpdateURL": "https://diskstation2/LCC_Configuration/Binary_files/ESP32_2Servo_2Frog_2TOTI_WiFi/V1.0.0/firmware.bin",
       "JMRI_name": "London"
     }
   ]
 }
+
 ```
 
 
