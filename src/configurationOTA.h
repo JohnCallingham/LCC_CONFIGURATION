@@ -30,8 +30,8 @@
 
 class ConfigurationOTA {
   public:
-    ConfigurationOTA(long ssidTimeoutmS) { this->ssidTimeoutmS = ssidTimeoutmS; }
-    int downloadConfiguration(const char* credentials);
+    // ConfigurationOTA(long ssidTimeoutmS) { this->ssidTimeoutmS = ssidTimeoutmS; }
+    int downloadConfiguration(const char* credentials, long ssidTimeoutmS);
 
     // Getter methods
     const char* board() { return configurationBoard; }
@@ -47,7 +47,7 @@ class ConfigurationOTA {
     JsonDocument docConfigurations;
 
     int processConfigurationCredential(JsonObject elemCredential);
-    void processConfiguration(JsonObject elemConfiguration);
+    int processConfiguration(JsonObject elemConfiguration);
     void processJMRICredential(JsonObject elemCredential);
     int connectWiFi(String ssid, String password);
     String downloadJsonConfigurationFile(String jsonURL);

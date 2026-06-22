@@ -1,6 +1,8 @@
 #include "configurationOTA.h"
 
-int ConfigurationOTA::downloadConfiguration(const char* credentials) {
+int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTimeoutmS) {
+  this->ssidTimeoutmS = ssidTimeoutmS;
+
   // Connect to an SSID which has a "configuration_url" stored.
 
   Serial.printf("\n%6ld contents of credentials.h;-%s", millis(), credentials);
@@ -21,6 +23,11 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials) {
       error = processConfigurationCredential(elemCredential);
       if (error == 0) { break; } // No need to try any more SSIDs.
     }
+  }
+
+  if (error == -1) {
+    Serial.printf("\n%6ld No available SSIDs", millis());
+    return error;
   }
 
   // We've finished downloading the json configuration file.
@@ -71,20 +78,24 @@ int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) 
   Serial.printf("\n%6ld Deserialised json configuration file", millis());
 
   // Step through all configurations looking for one which matches our MAC address.
+  int error = -1;
   for (JsonObject elemConfiguration : docConfigurations["Configurations"].as<JsonArray>()) {
-    processConfiguration(elemConfiguration);
+    error = processConfiguration(elemConfiguration);
+    if (error == 0) { break; } // We have found a matching MAC address so no need to continue round the for loop.
   }
 
-  return 0;
+  // return 0;
+  return error; // Returns -1 if no matching MAC address found.
 }
 
-void ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
-  if (! (elemConfiguration["MAC_Address"] == macAddress)) { // != doesn't work !!!
-    return;
+int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
+  if (! (elemConfiguration["MAC_Address"] == macAddress)) { // != doesn't work !!
+    Serial.printf("\n%6ld Non matching MAC address: %s", millis(), (const char*) elemConfiguration["MAC_Address"]);
+    return -1;
   }
 
   // This is the configuration record for this node.
-  Serial.printf("\n%6ld Found matching MAC address", millis());
+  Serial.printf("\n%6ld Found matching MAC address: %s", millis(), (const char*) elemConfiguration["MAC_Address"]);
 
   // Copy so the data is not lost when the JsonObject goes out of scope.
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
@@ -101,6 +112,8 @@ void ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
       break; // No need to try any other credential records.
     }
   }
+
+  return 0;
 }
 
 void ConfigurationOTA::processJMRICredential(JsonObject elemCredential) {
