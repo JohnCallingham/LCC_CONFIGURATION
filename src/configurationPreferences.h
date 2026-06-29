@@ -23,6 +23,8 @@ namespace ConfigurationPreferences {
   void putNodeID(NodeID nodeID);
   void putFactoryReset(int factoryReset);
   void putWiFiSSID(String wifiSSID);
+  void putWiFiSSID(const char* wifiSSID);
   void putWiFiPassword(String wifiPassword);
+  void putWiFiPassword(const char* wifiPassword);
     
 }

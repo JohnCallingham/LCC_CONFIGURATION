@@ -1,11 +1,41 @@
 #include "configurationOTA.h"
+#include "configurationPreferences.h"
+
+void ConfigurationOTA::doConfiguration() {
+  int error;
+
+  // error = downloadConfiguration(this->credentials, 1000);
+  error = downloadConfiguration(this->credentials, this->ssidTimeoutmS);
+
+  if (error == 0) {
+    // Configuration data was successfully downloaded.
+
+    // If a newer firmware is available, then use it to update the existing firmware and restart.
+    checkForFirmwareUpdate(currentVersion);
+
+    // Compare the Node ID in the configuration data with the Node ID stored in Preferences.
+    // If they are different, then store the new Node ID in Preferences.
+    // NodeID preferencesNodeID = ConfigurationPreferences::getNodeID(NodeID(NODE_ADDRESS));
+    NodeID preferencesNodeID = ConfigurationPreferences::getNodeID(defaultNodeID);
+    if (! this->nodeID().equals(& preferencesNodeID)) {
+      // Store the new Node ID in Preferences.
+      ConfigurationPreferences::putNodeID(this->nodeID());
+    }
+  }
+
+  // We've finished performing configuration.
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.printf("\n%6ld Disconnecting from configuration WiFi: %s", millis(), WiFi.SSID());
+    WiFi.disconnect(); 
+  }
+}
 
 int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTimeoutmS) {
   this->ssidTimeoutmS = ssidTimeoutmS;
 
   // Connect to an SSID which has a "configuration_url" stored.
 
-  Serial.printf("\n%6ld contents of credentials.h;-%s", millis(), credentials);
+  Serial.printf("\n%6ld Contents of credentials.h;-%s", millis(), credentials);
 
   // Deserialise the json credentials file.
   DeserializationError errorCredentials = deserializeJson(docCredentials, credentials);
@@ -17,7 +47,6 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTi
 
   // Try all SSIDs in the credentials file which have a non zero "configuration_url" value.
   int error = -1;
-  // for (JsonObject elemCredential : docCredentials.as<JsonArray>()) {
   for (JsonObject elemCredential : docCredentials["Credentials"].as<JsonArray>()) {
     if (! elemCredential["configuration_url"].isNull()) {
       error = processConfigurationCredential(elemCredential);
@@ -30,28 +59,23 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTi
     return error;
   }
 
-  // We've finished downloading the json configuration file.
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.printf("\n%6ld Disconnecting from configuration WiFi: %s", millis(), WiFi.SSID());
-    WiFi.disconnect(); 
-  }
-
   // Only display these lines if we have downloaded a json configuration file
   if (error == 0) {
-    Serial.printf("\n%6ld Board = %s", millis(), this->board());
-    Serial.printf("\n%6ld NodeID = ", millis()); this->nodeID().print();
-    Serial.printf("\n%6ld Version = %s", millis(), this->version());
-    Serial.printf("\n%6ld UpdateURL = %s", millis(), this->updateURL());
-    Serial.printf("\n%6ld JMRIname = %s", millis(), this->jmriName());
+    Serial.printf("\n%6ld  Board = %s", millis(), this->board());
+    Serial.printf("\n%6ld  NodeID = ", millis()); this->nodeID().print();
+    Serial.printf("\n%6ld  Version = %s", millis(), this->version());
+    Serial.printf("\n%6ld  UpdateURL = %s", millis(), this->updateURL());
+    Serial.printf("\n%6ld  JMRIname = %s", millis(), this->jmriName());
   } else {
-    Serial.printf("\n%6ld Error when attempting to download a json configuration file", millis());
+    Serial.printf("\n%6ld  Error when attempting to download a json configuration file", millis());
   }
 
-  // return 0;
   return error;
 }
 
 int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) {
+  Serial.printf("\n%6ld In processConfigurationCredential()", millis());
+
   // Try this SSID to see if we can connect to it.
   if (connectWiFi(elemCredential["ssid"], elemCredential["password"]) != 0) {
     return -1;
@@ -68,11 +92,12 @@ int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) 
   }
 
   // We have successfully downloaded the json configuration file.
+  Serial.printf("\n%6ld Downloaded json configuration file", millis());
 
   // Deserialise the json configuration file.
   DeserializationError errorConfigurations = deserializeJson(docConfigurations, payload.c_str());
   if (errorConfigurations != DeserializationError::Ok) {
-    Serial.printf("\n%6ld Error deserialising configuration", millis());
+    Serial.printf("\n%6ld  Error deserialising configuration", millis());
     return -1; // Try other SSIDs.
   }
   Serial.printf("\n%6ld Deserialised json configuration file", millis());
@@ -84,18 +109,20 @@ int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) 
     if (error == 0) { break; } // We have found a matching MAC address so no need to continue round the for loop.
   }
 
-  // return 0;
+  Serial.printf("\n%6ld Exiting processConfigurationCredential()", millis());
   return error; // Returns -1 if no matching MAC address found.
 }
 
 int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
+  Serial.printf("\n%6ld In processConfiguration()", millis());
+
   if (! (elemConfiguration["MAC_Address"] == macAddress)) { // != doesn't work !!
-    Serial.printf("\n%6ld Non matching MAC address: %s", millis(), (const char*) elemConfiguration["MAC_Address"]);
+    Serial.printf("\n%6ld  Non matching MAC address: %s", millis(), elemConfiguration["MAC_Address"].as<const char *>());
     return -1;
   }
 
   // This is the configuration record for this node.
-  Serial.printf("\n%6ld Found matching MAC address: %s", millis(), (const char*) elemConfiguration["MAC_Address"]);
+  Serial.printf("\n%6ld  Found matching MAC address: %s", millis(), elemConfiguration["MAC_Address"].as<const char *>());
 
   // Copy so the data is not lost when the JsonObject goes out of scope.
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
@@ -104,25 +131,154 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   strncpy(configurationUpdateURL, elemConfiguration["UpdateURL"], sizeof(configurationUpdateURL));
   strncpy(configurationJMRIname, elemConfiguration["JMRI_name"], sizeof(configurationJMRIname));
 
+
+
+  // checkForFirmwareUpdate(configurationVersion, configurationUpdateURL);
+  // // === ??? does an OTA update overwrite Preferences ??? ===
+
+
+
+
+
   // Look up the SSID and Password from credentials.h for JMRI_name.
   // Step through all credential records looking for one which matches JMRI_name.
-  for (JsonObject elemCredential : docCredentials.as<JsonArray>()) {
+  for (JsonObject elemCredential : docCredentials["Credentials"].as<JsonArray>()) {
+//    Serial.printf("\n%6ld processConfiguration(): elemCredential['name'] = %s", millis(), elemCredential["name"].as<const char *>());
     if (strcmp(elemCredential["name"], configurationJMRIname) == 0) {
       processJMRICredential(elemCredential);
       break; // No need to try any other credential records.
     }
   }
 
+  Serial.printf("\n%6ld Exiting processConfiguration()", millis());
   return 0;
 }
 
 void ConfigurationOTA::processJMRICredential(JsonObject elemCredential) {
+  Serial.printf("\n%6ld In processJMRICredential()", millis());
+
   strncpy(configurationJMRIssid, elemCredential["ssid"], sizeof(configurationJMRIssid));
   strncpy(configurationJMRIpassword, elemCredential["password"], sizeof(configurationJMRIpassword));
 
-  // === ??? need to store ssid and passowrd here if they have changed ??? ===
+  Serial.printf("\n%6ld  configurationJMRIssid = %s", millis(), configurationJMRIssid);
+  Serial.printf("\n%6ld  ConfigurationPreferences::getWiFiSSID() = %s", millis(), ConfigurationPreferences::getWiFiSSID());
 
+  // If either of ssid or password has changed from that stored in Preferences, update Preferences.
+  if ((strcmp(configurationJMRIssid, ConfigurationPreferences::getWiFiSSID()) != 0) ||
+      (strcmp(configurationJMRIpassword, ConfigurationPreferences::getWiFiPassword()) != 0)) {
+    // ssid or password has changed
 
+    // String strWiFissid = String(configurationJMRIssid);
+    // String strWiFipassword = String(configurationJMRIpassword);
+
+    Serial.printf("\n%6ld  Storing new ssid: %s", millis(), configurationJMRIssid);
+
+    // ConfigurationPreferences::putWiFiSSID(strWiFissid);
+    // ConfigurationPreferences::putWiFiPassword(strWiFipassword);
+    // === NOT been tested !!! ===  
+    ConfigurationPreferences::putWiFiSSID(configurationJMRIssid);
+    ConfigurationPreferences::putWiFiPassword(configurationJMRIpassword);
+  }
+  Serial.printf("\n%6ld Exiting processJMRICredential()", millis());
+}
+
+void ConfigurationOTA::checkForFirmwareUpdate(String swVersion) {
+  // Called from main.cpp
+
+  Serial.printf("\n%6ld In checkForFirmwareUpdate()", millis());
+  Serial.printf("\n%6ld  installed version is %s, configuration version is %s", millis(), swVersion.c_str(), configurationVersion);
+
+  // Check that a version and configuration_url has been successfully downloaded
+  if ((strlen(configurationVersion) == 0) || (strlen(configurationUpdateURL) == 0)) {
+    Serial.printf("\n%6ld  Either configurationVersion and/or configurationUpdateURL not present", millis());
+    return;
+  }
+
+  // Check to see if version from the configuration file is different to the firmware already running.
+  if (strcmp(configurationVersion, swVersion.c_str()) == 0) {
+    // Versions are the same so nothing more to do.
+    Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
+    return;
+  }
+
+  Serial.printf("\n%6ld  Starting firmware update", millis());
+
+  int error = doFirmwareUpdate(configurationUpdateURL);
+
+  // // Disconnect WiFi - moved from downloadConfiguration() as it needs to still be established to do any potential firmware update.
+  // WiFi.disconnect();
+  Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
+}
+
+int ConfigurationOTA::doFirmwareUpdate(const char* updateURL) {
+  Serial.printf("\n%6ld In doFirmwareUpdate(). updateURL = %s", millis(), updateURL);
+
+  HTTPClient http;
+
+  http.begin(updateURL);
+  
+  // Send HTTP GET request
+  int httpResponseCode = http.GET();
+
+  if (httpResponseCode != 200) {
+    Serial.printf("\n%6ld httpResponseCode = %d", millis(), httpResponseCode);
+    return -1;
+  }
+
+  int totalLength = http.getSize();
+
+  Serial.printf("\n%6ld totalLength = %d ", millis(), totalLength);
+
+  // this is required to start firmware update process
+  if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {
+    Serial.printf("\n%6ld  Error from Update.begin()", millis());
+    return -1;
+  }
+
+  // create buffer for read
+  uint8_t buff[1280] = { 0 };
+
+  // get tcp stream
+  WiFiClient* stream = http.getStreamPtr();
+
+  // read all data from server
+  long timeForNextPrint = millis() + 1000;
+  int offset = 0;
+  while (http.connected() && offset < totalLength) {
+    size_t sizeAvail = stream->available();
+    if (sizeAvail > 0) {
+      size_t bytes_to_read = min(sizeAvail, sizeof(buff));
+      size_t bytes_read = stream->readBytes(buff, bytes_to_read);
+      size_t bytes_written = Update.write(buff, bytes_read);
+      if (bytes_read != bytes_written) {
+        Serial.printf("\n%6ld Unexpected error in OTA: %d %d %d\n", millis(), bytes_to_read, bytes_read, bytes_written);
+        break;
+      }
+      offset += bytes_written;
+
+      // Print progress every second;
+      if (millis() > timeForNextPrint) {
+        Serial.printf("\n%6ld downloaded %d", millis(), offset);
+        timeForNextPrint = millis() + 1000;
+      }
+    }
+  }
+
+  if (offset == totalLength) {
+    Serial.printf("\n%6ld downloaded %d", millis(), offset);
+
+    Update.end(true);
+
+    Serial.printf("\n%6ld Restarting to load new firmware\n", millis());
+
+    delay(1000);
+
+    // Restart ESP32 to see changes
+    ESP.restart();
+  }
+
+  http.end();
+  return httpResponseCode;
 }
 
 int ConfigurationOTA::connectWiFi(String ssid, String password) {
@@ -159,7 +315,7 @@ String ConfigurationOTA::downloadJsonConfigurationFile(String jsonURL) {
   if (httpResponseCode != 200)
       return "";
   
-  Serial.printf("\n%6ld contents of configuration_url;-\n%s", millis(), Payload.c_str());
+  Serial.printf("\n%6ld Contents of configuration_url;-\n%s", millis(), Payload.c_str());
 
   return Payload;
 }
@@ -193,7 +349,6 @@ NodeID ConfigurationOTA::nodeID() {
   for (int i = 0; i < 6; i++) {
     strncpy(cval, configurationNodeID + (i * 3), 2);
     ival[i] = strtol(cval, NULL, 16);
-    // Serial.printf("\nval[%d] = %d", i, ival[i]);
   }
 
   return NodeID(ival[0], ival[1], ival[2], ival[3], ival[4], ival[5]);

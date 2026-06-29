@@ -92,9 +92,17 @@ namespace ConfigurationPreferences {
     preferences.end();
   }
 
+  void putWiFiSSID(const char* wifiSSID) {
+    putWiFiSSID(String(wifiSSID));
+  }
+
   void putWiFiPassword(String wifiPassword) {
     preferences.begin(NAMESPACE_WIFI);
     preferences.putString("password", wifiPassword);
     preferences.end();
+  }
+
+  void putWiFiPassword(const char* wifiPassword) {
+    putWiFiPassword(String(wifiPassword));
   }
 }

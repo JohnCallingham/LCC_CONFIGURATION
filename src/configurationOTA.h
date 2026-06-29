@@ -24,14 +24,13 @@
 #include <Arduino.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-//#include <Update.h>
+#include <Update.h>
 #include <WiFi.h>
 #include "NodeID.h"
 
 class ConfigurationOTA {
   public:
-    // ConfigurationOTA(long ssidTimeoutmS) { this->ssidTimeoutmS = ssidTimeoutmS; }
-    int downloadConfiguration(const char* credentials, long ssidTimeoutmS);
+    void doConfiguration();
 
     // Getter methods
     const char* board() { return configurationBoard; }
@@ -42,18 +41,31 @@ class ConfigurationOTA {
     const char* jmriPassword() { return configurationJMRIpassword; }
     const char* jmriName() { return configurationJMRIname; }
 
+    // Setter methods
+    void setCredentials(const char* credentials) { this->credentials = credentials; }
+    void setTimeout(long ssidTimeoutmS) { this->ssidTimeoutmS = ssidTimeoutmS; }
+    void setCurrentVersion(String currentVersion) { this->currentVersion = currentVersion; }
+    void setDefaultNodeID(NodeID defaultNodeID) { this->defaultNodeID = defaultNodeID; }
+
   private:
     JsonDocument docCredentials;
     JsonDocument docConfigurations;
 
+    int downloadConfiguration(const char* credentials, long ssidTimeoutmS);
+    void checkForFirmwareUpdate(String swVersion);
     int processConfigurationCredential(JsonObject elemCredential);
     int processConfiguration(JsonObject elemConfiguration);
     void processJMRICredential(JsonObject elemCredential);
+    // void checkForFirmwareUpdate(const char* version, const char* updateURL);
+    int doFirmwareUpdate(const char* updateURL);
     int connectWiFi(String ssid, String password);
     String downloadJsonConfigurationFile(String jsonURL);
     int downloadJson(const char* URL, String& payload);
 
+    const char* credentials;
     long ssidTimeoutmS;
+    String currentVersion;
+    NodeID defaultNodeID;
 
     String macAddress;
     
