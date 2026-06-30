@@ -15,7 +15,7 @@ Every time a node starts the process is as follows;-
 5. The json configuration file indicated by configuration_url is downloaded and deserialised.
 6. Of the many records in the configuration file there will be only one which matches this node's MAC address and this record is used to configure the node.
 7. If the Node ID stored in this record in the configuration file is different to the Node ID currently used by the node, the new Node ID is stored in Preferences.
-8. If the value of ```Version``` in the json configuration file is different to that which is currently installed, then the firmware.bin file located at the value of ```UpdateURL``` is downloaded and installed.
+8. If the value of ```Version``` in the json configuration file is different to that which is currently installed, then the firmware.bin file located at the value of ```UpdateURL``` is downloaded and installed. The ESP32 is then restarted to run the new firmware.
 9. The WiFi connection which has downloaded the configuration file is disconnected.
 10. The configuration record for this node will contain the name of the SSID which the node will use to connect to JMRI.
 11. The credentials for this SSID are looked up from the credentials file and used to connect to JMRI.
