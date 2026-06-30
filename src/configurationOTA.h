@@ -64,6 +64,7 @@ class ConfigurationOTA {
     int connectWiFi(String ssid, String password);
     String downloadJsonConfigurationFile(String jsonURL);
     int downloadJson(const char* URL, String& payload);
+    const char* printNodeID(NodeID nodeID);
 
     const char* credentials;
     long ssidTimeoutmS;
@@ -71,6 +72,7 @@ class ConfigurationOTA {
     NodeID defaultNodeID;
 
     String macAddress;
+    char charNodeID[30] = "";
     
     // The values from the json configuration file.
     char configurationBoard[100] = "";

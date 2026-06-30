@@ -62,7 +62,8 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTi
   // Only display these lines if we have downloaded a json configuration file
   if (error == 0) {
     Serial.printf("\n%6ld  Board = %s", millis(), this->board());
-    Serial.printf("\n%6ld  NodeID = ", millis()); this->nodeID().print();
+    // Serial.printf("\n%6ld  NodeID = ", millis()); this->nodeID().print();
+    Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
     Serial.printf("\n%6ld  Update_Path = %s", millis(), this->updatePath());
     Serial.printf("\n%6ld  Update_Version = %s", millis(), this->updateVersion());
     Serial.printf("\n%6ld  Update_Filename = %s", millis(), this->updateFilename());
@@ -73,6 +74,7 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTi
     Serial.printf("\n%6ld  Error when attempting to download a json configuration file", millis());
   }
 
+  Serial.printf("\n%6ld Exiting downloadConfiguration()", millis());
   return error;
 }
 
@@ -367,4 +369,10 @@ NodeID ConfigurationOTA::nodeID() {
   }
 
   return NodeID(ival[0], ival[1], ival[2], ival[3], ival[4], ival[5]);
+}
+
+const char* ConfigurationOTA::printNodeID(NodeID nodeID) {
+  // Returns a printable string showing nodeID.
+  sprintf(this->charNodeID, "%02X.%02X.%02X.%02X.%02X.%02X", nodeID.val[0], nodeID.val[1], nodeID.val[2], nodeID.val[3], nodeID.val[4], nodeID.val[5]);
+  return this->charNodeID;
 }
