@@ -35,11 +35,14 @@ class ConfigurationOTA {
     // Getter methods
     const char* board() { return configurationBoard; }
     NodeID nodeID();
-    const char* version() { return configurationVersion; }
-    const char* updateURL() { return configurationUpdateURL; }
-    const char* jmriSSID() { return configurationJMRIssid; }
-    const char* jmriPassword() { return configurationJMRIpassword; }
-    const char* jmriName() { return configurationJMRIname; }
+    const char* updatePath() { return this->configurationUpdatePath; }
+    const char* updateVersion() { return this->configurationUpdateVersion; }
+    const char* updateFilename() { return this->configurationUpdateFilename; }
+    // const char* version() { return this->configurationVersion; }
+    // const char* updateURL() { return this->configurationUpdateURL; }
+    const char* jmriSSID() { return this->configurationJMRIssid; }
+    const char* jmriPassword() { return this->configurationJMRIpassword; }
+    const char* jmriName() { return this->configurationJMRIname; }
 
     // Setter methods
     void setCredentials(const char* credentials) { this->credentials = credentials; }
@@ -72,8 +75,11 @@ class ConfigurationOTA {
     // The values from the json configuration file.
     char configurationBoard[100] = "";
     char configurationNodeID[20] = "";
-    char configurationVersion[20] = "";
-    char configurationUpdateURL[200] = "";
+    char configurationUpdatePath[200] = "";
+    char configurationUpdateVersion[20] = "";
+    char configurationUpdateFilename[20] = "";
+    // char configurationVersion[20] = "";
+    // char configurationUpdateURL[200] = "";
     char configurationJMRIname[50] = "";
 
     // The values from the json credentials file.

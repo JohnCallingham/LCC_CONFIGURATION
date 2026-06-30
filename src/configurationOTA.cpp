@@ -11,7 +11,7 @@ void ConfigurationOTA::doConfiguration() {
     // Configuration data was successfully downloaded.
 
     // If a newer firmware is available, then use it to update the existing firmware and restart.
-    checkForFirmwareUpdate(currentVersion);
+    checkForFirmwareUpdate(this->currentVersion);
 
     // Compare the Node ID in the configuration data with the Node ID stored in Preferences.
     // If they are different, then store the new Node ID in Preferences.
@@ -63,8 +63,11 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTi
   if (error == 0) {
     Serial.printf("\n%6ld  Board = %s", millis(), this->board());
     Serial.printf("\n%6ld  NodeID = ", millis()); this->nodeID().print();
-    Serial.printf("\n%6ld  Version = %s", millis(), this->version());
-    Serial.printf("\n%6ld  UpdateURL = %s", millis(), this->updateURL());
+    Serial.printf("\n%6ld  Update_Path = %s", millis(), this->updatePath());
+    Serial.printf("\n%6ld  Update_Version = %s", millis(), this->updateVersion());
+    Serial.printf("\n%6ld  Update_Filename = %s", millis(), this->updateFilename());
+    // Serial.printf("\n%6ld  Version = %s", millis(), this->version());
+    // Serial.printf("\n%6ld  UpdateURL = %s", millis(), this->updateURL());
     Serial.printf("\n%6ld  JMRIname = %s", millis(), this->jmriName());
   } else {
     Serial.printf("\n%6ld  Error when attempting to download a json configuration file", millis());
@@ -127,23 +130,18 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   // Copy so the data is not lost when the JsonObject goes out of scope.
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
   strncpy(configurationNodeID, elemConfiguration["NodeID"], sizeof(configurationNodeID));
-  strncpy(configurationVersion, elemConfiguration["Version"], sizeof(configurationVersion));
-  strncpy(configurationUpdateURL, elemConfiguration["UpdateURL"], sizeof(configurationUpdateURL));
+
+  strncpy(configurationUpdatePath, elemConfiguration["Update_Path"], sizeof(configurationUpdatePath));
+  strncpy(configurationUpdateVersion, elemConfiguration["Update_Version"], sizeof(configurationUpdateVersion));
+  strncpy(configurationUpdateFilename, elemConfiguration["Update_Filename"], sizeof(configurationUpdateFilename));
+
+  // strncpy(configurationVersion, elemConfiguration["Version"], sizeof(configurationVersion));
+  // strncpy(configurationUpdateURL, elemConfiguration["UpdateURL"], sizeof(configurationUpdateURL));
   strncpy(configurationJMRIname, elemConfiguration["JMRI_name"], sizeof(configurationJMRIname));
-
-
-
-  // checkForFirmwareUpdate(configurationVersion, configurationUpdateURL);
-  // // === ??? does an OTA update overwrite Preferences ??? ===
-
-
-
-
 
   // Look up the SSID and Password from credentials.h for JMRI_name.
   // Step through all credential records looking for one which matches JMRI_name.
   for (JsonObject elemCredential : docCredentials["Credentials"].as<JsonArray>()) {
-//    Serial.printf("\n%6ld processConfiguration(): elemCredential['name'] = %s", millis(), elemCredential["name"].as<const char *>());
     if (strcmp(elemCredential["name"], configurationJMRIname) == 0) {
       processJMRICredential(elemCredential);
       break; // No need to try any other credential records.
@@ -186,27 +184,44 @@ void ConfigurationOTA::checkForFirmwareUpdate(String swVersion) {
   // Called from main.cpp
 
   Serial.printf("\n%6ld In checkForFirmwareUpdate()", millis());
-  Serial.printf("\n%6ld  installed version is %s, configuration version is %s", millis(), swVersion.c_str(), configurationVersion);
+  Serial.printf("\n%6ld  installed version is %s, configuration version is %s", millis(), swVersion.c_str(), configurationUpdateVersion);
 
-  // Check that a version and configuration_url has been successfully downloaded
-  if ((strlen(configurationVersion) == 0) || (strlen(configurationUpdateURL) == 0)) {
-    Serial.printf("\n%6ld  Either configurationVersion and/or configurationUpdateURL not present", millis());
+  // // Check that a version and configuration_url has been successfully downloaded
+  // if ((strlen(configurationVersion) == 0) || (strlen(configurationUpdateURL) == 0)) {
+  //   Serial.printf("\n%6ld  Either configurationVersion and/or configurationUpdateURL not present", millis());
+  //   return;
+  // }
+
+  // Check that Update_Path, Update_Version and Update_Filename have been successfully downloaded.
+  if ((strlen(configurationUpdatePath) == 0) || (strlen(configurationUpdateVersion) == 0) || (strlen(configurationUpdateFilename) == 0)) {
+    Serial.printf("\n%6ld  Any of Update_Path, Update_Version or Update_Filename are not present", millis());
     return;
   }
 
-  // Check to see if version from the configuration file is different to the firmware already running.
-  if (strcmp(configurationVersion, swVersion.c_str()) == 0) {
+  // // Check to see if version from the configuration file is different to the firmware already running.
+  // if (strcmp(configurationVersion, swVersion.c_str()) == 0) {
+  //   // Versions are the same so nothing more to do.
+  //   Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
+  //   return;
+  // }
+
+  // Check to see if the installed version is different to Update_Version.
+  if (strcmp(swVersion.c_str(), configurationUpdateVersion) == 0) {
     // Versions are the same so nothing more to do.
     Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
     return;
   }
 
+  // There is a new version to download, so calculate the full URL.
+  char updateURL[250];
+  sprintf(updateURL, "%s/V%s/%s", configurationUpdatePath, configurationUpdateVersion, configurationUpdateFilename);
+  // Serial.printf("\n%6ld updateURL = %s", millis(), updateURL);
+
   Serial.printf("\n%6ld  Starting firmware update", millis());
 
-  int error = doFirmwareUpdate(configurationUpdateURL);
+  // int error = doFirmwareUpdate(configurationUpdateURL);
+  int error = doFirmwareUpdate(updateURL);
 
-  // // Disconnect WiFi - moved from downloadConfiguration() as it needs to still be established to do any potential firmware update.
-  // WiFi.disconnect();
   Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
 }
 
