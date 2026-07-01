@@ -2,10 +2,7 @@
 #include "configurationPreferences.h"
 
 void ConfigurationOTA::doConfiguration() {
-  int error;
-
-  // error = downloadConfiguration(this->credentials, 1000);
-  error = downloadConfiguration(this->credentials, this->ssidTimeoutmS);
+  int error = downloadConfiguration();
 
   if (error == 0) {
     // Configuration data was successfully downloaded.
@@ -30,15 +27,14 @@ void ConfigurationOTA::doConfiguration() {
   }
 }
 
-int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTimeoutmS) {
-  this->ssidTimeoutmS = ssidTimeoutmS;
-
+// int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTimeoutmS) {
+int ConfigurationOTA::downloadConfiguration() {
   // Connect to an SSID which has a "configuration_url" stored.
 
-  Serial.printf("\n%6ld Contents of credentials.h;-%s", millis(), credentials);
+  Serial.printf("\n%6ld Contents of credentials.h;-%s", millis(), this->credentials);
 
   // Deserialise the json credentials file.
-  DeserializationError errorCredentials = deserializeJson(docCredentials, credentials);
+  DeserializationError errorCredentials = deserializeJson(docCredentials, this->credentials);
   if (errorCredentials != DeserializationError::Ok) {
     Serial.printf("\n%6ld Error deserialising credentials", millis());
     return -1;
@@ -120,44 +116,17 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   // Copy so the data is not lost when the JsonObject goes out of scope.
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
   strncpy(configurationNodeID, elemConfiguration["NodeID"], sizeof(configurationNodeID));
-
-
-
-
-  // char fred[200];
-  // strncpy(fred, elemConfiguration["Update"]["Version"], sizeof(fred));
-  // Serial.printf("\n%6ld fred = %s", millis(), fred);
-
-
   strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
   strncpy(configurationUpdateVersion, elemConfiguration["Update"]["Version"], sizeof(configurationUpdateVersion));
   strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
-
-
-
-
-
-
-  // strncpy(configurationUpdatePath, elemConfiguration["Update_Path"], sizeof(configurationUpdatePath));
-  // strncpy(configurationUpdateVersion, elemConfiguration["Update_Version"], sizeof(configurationUpdateVersion));
-  // strncpy(configurationUpdateFilename, elemConfiguration["Update_Filename"], sizeof(configurationUpdateFilename));
-
   strncpy(configurationJMRIname, elemConfiguration["JMRI_name"], sizeof(configurationJMRIname));
 
-
-
-
-    Serial.printf("\n%6ld  Board = %s", millis(), this->board());
-    Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
-    Serial.printf("\n%6ld  UpdatePath = %s", millis(), this->updatePath());
-    Serial.printf("\n%6ld  UpdateVersion = %s", millis(), this->updateVersion());
-    Serial.printf("\n%6ld  UpdateFilename = %s", millis(), this->updateFilename());
-    Serial.printf("\n%6ld  JMRIname = %s", millis(), this->jmriName());
-
-
-
-
-
+  Serial.printf("\n%6ld  Board = %s", millis(), this->board());
+  Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
+  Serial.printf("\n%6ld  UpdatePath = %s", millis(), this->updatePath());
+  Serial.printf("\n%6ld  UpdateVersion = %s", millis(), this->updateVersion());
+  Serial.printf("\n%6ld  UpdateFilename = %s", millis(), this->updateFilename());
+  Serial.printf("\n%6ld  JMRIname = %s", millis(), this->jmriName());
 
   // Look up the SSID and Password from credentials.h for JMRI_name.
   // Step through all credential records looking for one which matches JMRI_name.
@@ -206,26 +175,13 @@ void ConfigurationOTA::checkForFirmwareUpdate(String swVersion) {
   Serial.printf("\n%6ld In checkForFirmwareUpdate()", millis());
   Serial.printf("\n%6ld  installed version is %s, configuration version is %s", millis(), swVersion.c_str(), configurationUpdateVersion);
 
-  // // Check that a version and configuration_url has been successfully downloaded
-  // if ((strlen(configurationVersion) == 0) || (strlen(configurationUpdateURL) == 0)) {
-  //   Serial.printf("\n%6ld  Either configurationVersion and/or configurationUpdateURL not present", millis());
-  //   return;
-  // }
-
   // Check that Update_Path, Update_Version and Update_Filename have been successfully downloaded.
   if ((strlen(configurationUpdatePath) == 0) || (strlen(configurationUpdateVersion) == 0) || (strlen(configurationUpdateFilename) == 0)) {
     Serial.printf("\n%6ld  Any of Update_Path, Update_Version or Update_Filename are not present", millis());
     return;
   }
 
-  // // Check to see if version from the configuration file is different to the firmware already running.
-  // if (strcmp(configurationVersion, swVersion.c_str()) == 0) {
-  //   // Versions are the same so nothing more to do.
-  //   Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
-  //   return;
-  // }
-
-  // Check to see if the installed version is different to Update_Version.
+  // Check to see if the installed version is different to [Update][Version].
   if (strcmp(swVersion.c_str(), configurationUpdateVersion) == 0) {
     // Versions are the same so nothing more to do.
     Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
@@ -235,18 +191,17 @@ void ConfigurationOTA::checkForFirmwareUpdate(String swVersion) {
   // There is a new version to download, so calculate the full URL.
   char updateURL[250];
   sprintf(updateURL, "%s/V%s/%s", configurationUpdatePath, configurationUpdateVersion, configurationUpdateFilename);
-  // Serial.printf("\n%6ld updateURL = %s", millis(), updateURL);
 
   Serial.printf("\n%6ld  Starting firmware update", millis());
 
-  // int error = doFirmwareUpdate(configurationUpdateURL);
   int error = doFirmwareUpdate(updateURL);
 
   Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
 }
 
 int ConfigurationOTA::doFirmwareUpdate(const char* updateURL) {
-  Serial.printf("\n%6ld In doFirmwareUpdate(). updateURL = %s", millis(), updateURL);
+  Serial.printf("\n%6ld In doFirmwareUpdate()", millis());
+  Serial.printf("\n%6ld  updateURL = %s", millis(), updateURL);
 
   HTTPClient http;
 

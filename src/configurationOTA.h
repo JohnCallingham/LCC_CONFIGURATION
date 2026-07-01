@@ -52,12 +52,11 @@ class ConfigurationOTA {
     JsonDocument docCredentials;
     JsonDocument docConfigurations;
 
-    int downloadConfiguration(const char* credentials, long ssidTimeoutmS);
+    int downloadConfiguration();
     void checkForFirmwareUpdate(String swVersion);
     int processConfigurationCredential(JsonObject elemCredential);
     int processConfiguration(JsonObject elemConfiguration);
     void processJMRICredential(JsonObject elemCredential);
-    // void checkForFirmwareUpdate(const char* version, const char* updateURL);
     int doFirmwareUpdate(const char* updateURL);
     int connectWiFi(String ssid, String password);
     String downloadJsonConfigurationFile(String jsonURL);
