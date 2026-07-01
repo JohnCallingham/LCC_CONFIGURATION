@@ -56,21 +56,9 @@ int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTi
 
   if (error == -1) {
     Serial.printf("\n%6ld No available SSIDs", millis());
-    return error;
   }
 
-  // Only display these lines if we have downloaded a json configuration file
-  if (error == 0) {
-    Serial.printf("\n%6ld  Board = %s", millis(), this->board());
-    // Serial.printf("\n%6ld  NodeID = ", millis()); this->nodeID().print();
-    Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
-    Serial.printf("\n%6ld  Update_Path = %s", millis(), this->updatePath());
-    Serial.printf("\n%6ld  Update_Version = %s", millis(), this->updateVersion());
-    Serial.printf("\n%6ld  Update_Filename = %s", millis(), this->updateFilename());
-    // Serial.printf("\n%6ld  Version = %s", millis(), this->version());
-    // Serial.printf("\n%6ld  UpdateURL = %s", millis(), this->updateURL());
-    Serial.printf("\n%6ld  JMRIname = %s", millis(), this->jmriName());
-  } else {
+  if (error != 0) {
     Serial.printf("\n%6ld  Error when attempting to download a json configuration file", millis());
   }
 
@@ -133,13 +121,43 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
   strncpy(configurationNodeID, elemConfiguration["NodeID"], sizeof(configurationNodeID));
 
-  strncpy(configurationUpdatePath, elemConfiguration["Update_Path"], sizeof(configurationUpdatePath));
-  strncpy(configurationUpdateVersion, elemConfiguration["Update_Version"], sizeof(configurationUpdateVersion));
-  strncpy(configurationUpdateFilename, elemConfiguration["Update_Filename"], sizeof(configurationUpdateFilename));
 
-  // strncpy(configurationVersion, elemConfiguration["Version"], sizeof(configurationVersion));
-  // strncpy(configurationUpdateURL, elemConfiguration["UpdateURL"], sizeof(configurationUpdateURL));
+
+
+  // char fred[200];
+  // strncpy(fred, elemConfiguration["Update"]["Version"], sizeof(fred));
+  // Serial.printf("\n%6ld fred = %s", millis(), fred);
+
+
+  strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
+  strncpy(configurationUpdateVersion, elemConfiguration["Update"]["Version"], sizeof(configurationUpdateVersion));
+  strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
+
+
+
+
+
+
+  // strncpy(configurationUpdatePath, elemConfiguration["Update_Path"], sizeof(configurationUpdatePath));
+  // strncpy(configurationUpdateVersion, elemConfiguration["Update_Version"], sizeof(configurationUpdateVersion));
+  // strncpy(configurationUpdateFilename, elemConfiguration["Update_Filename"], sizeof(configurationUpdateFilename));
+
   strncpy(configurationJMRIname, elemConfiguration["JMRI_name"], sizeof(configurationJMRIname));
+
+
+
+
+    Serial.printf("\n%6ld  Board = %s", millis(), this->board());
+    Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
+    Serial.printf("\n%6ld  UpdatePath = %s", millis(), this->updatePath());
+    Serial.printf("\n%6ld  UpdateVersion = %s", millis(), this->updateVersion());
+    Serial.printf("\n%6ld  UpdateFilename = %s", millis(), this->updateFilename());
+    Serial.printf("\n%6ld  JMRIname = %s", millis(), this->jmriName());
+
+
+
+
+
 
   // Look up the SSID and Password from credentials.h for JMRI_name.
   // Step through all credential records looking for one which matches JMRI_name.

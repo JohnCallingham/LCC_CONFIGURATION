@@ -38,8 +38,6 @@ class ConfigurationOTA {
     const char* updatePath() { return this->configurationUpdatePath; }
     const char* updateVersion() { return this->configurationUpdateVersion; }
     const char* updateFilename() { return this->configurationUpdateFilename; }
-    // const char* version() { return this->configurationVersion; }
-    // const char* updateURL() { return this->configurationUpdateURL; }
     const char* jmriSSID() { return this->configurationJMRIssid; }
     const char* jmriPassword() { return this->configurationJMRIpassword; }
     const char* jmriName() { return this->configurationJMRIname; }
@@ -80,8 +78,6 @@ class ConfigurationOTA {
     char configurationUpdatePath[200] = "";
     char configurationUpdateVersion[20] = "";
     char configurationUpdateFilename[20] = "";
-    // char configurationVersion[20] = "";
-    // char configurationUpdateURL[200] = "";
     char configurationJMRIname[50] = "";
 
     // The values from the json credentials file.
