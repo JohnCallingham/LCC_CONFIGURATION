@@ -15,7 +15,7 @@ Every time a node starts the process is as follows;-
 5. The json configuration file indicated by configuration_url is downloaded and deserialised.
 6. Of the many records in the configuration file there will be only one which matches this node's MAC address and this record is used to configure the node.
 7. If the Node ID stored in this record in the configuration file is different to the Node ID currently used by the node, the new Node ID is stored in Preferences.
-8. If the value of ```Update_Version``` in the json configuration file is different to that which is currently installed, then the file located at ```<Update_Path>/V<Update_Version>/<Update_Filename>``` is downloaded and installed. The ESP32 is then restarted to run the new firmware.
+8. If the value of ```[Update][Version]``` in the json configuration file is different to that which is currently installed, then the file located at ```<[Update][Path]>/V<[Update][Version]>/<[Update][Filename]>``` is downloaded and installed. The ESP32 is then restarted to run the new firmware.
 9. If no new firmware has been downloaded, then processing continues.
 10. The WiFi connection which has downloaded the configuration file is disconnected.
 11. The configuration record for this node will contain the name of the SSID which the node will use to connect to JMRI.
@@ -61,18 +61,22 @@ This file is placed on all web servers that are specified in credentials.h
       "MAC_Address": "3C:84:27:C4:A7:B8",
       "Board": "ESP32_6TOTI_WiFi",
       "NodeID": "05.01.01.01.91.0A",
-      "Update_Path": "http://diskstation2/LCC_Configuration/Binary_files/ESP32_6TOTI_WiFi",
-      "Update_Version": "1.0.4",
-      "Update_Filename": "firmware.bin",
+      "Update": {
+        "Version": "1.0.6",
+        "Path": "http://diskstation2/LCC_Configuration/Binary_files/ESP32_6TOTI_WiFi",
+        "Filename": "firmware.bin"
+      },
       "JMRI_name": "London"
     },
     {
       "MAC_Address": "74:4D:BD:A0:FC:5C",
       "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
       "NodeID": "05.01.01.01.91.09",
-      "Update_Path": "http://diskstation2/LCC_Configuration/Binary_files/ESP32_2Servo_2Frog_2TOTI_WiFi",
-      "Update_Version": "1.0.2",
-      "Update_Filename": "firmware.bin",
+      "Update": {
+        "Version": "1.0.4",
+        "Path": "http://diskstation2/LCC_Configuration/Binary_files/ESP32_2Servo_2Frog_2TOTI_WiFi",
+        "Filename": "firmware.bin"
+      },
       "JMRI_name": "London"
     }
   ]
