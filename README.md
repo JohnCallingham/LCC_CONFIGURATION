@@ -1,11 +1,21 @@
 # LCC_CONFIGURATION
-A software component which can be used as part of an OpenLCB/LCC node.
+A software component which can be used as part of an OpenLCB/LCC node. It has been developed using PlatformIO for an Arduino Nano ESP32.
 
-It has been developed to allow a user to configure multiple nodes prior to and after deployment without needing physical access to the node.
+## Purpose
+
+It has been developed to allow a user to configure multiple nodes prior to and after deployment without needing physical access to the node. The user can remotely configure the following options;-
+- Set the required Node ID
+- Set the SSID to which the node connects to access JMRI
+- Update a node's formware
+
+
+## Files
 
 There are two parts;-
 1. **ConfigurationOTA**. A class which allows a configuration file in json format to be hosted on a web server, external to the nodes, which provides a way for a user to alter various configuration properties of multiple nodes without needing physical access to the nodes.
 2. **ConfigurationPreferences**. A namespace which provides support methods to allow various configuration data to be stored and retrieved using the Arduino Preferences system.
+
+## Operation
 
 Every time a node starts the process is as follows;-
 1. The json formatted contents of the hard coded credentials.h file is read. This file contains details of one or more SSIDs to which the node may be able to connect.
