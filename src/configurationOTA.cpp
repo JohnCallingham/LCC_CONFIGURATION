@@ -153,16 +153,10 @@ void ConfigurationOTA::processJMRICredential(JsonObject elemCredential) {
   // If either of ssid or password has changed from that stored in Preferences, update Preferences.
   if ((strcmp(configurationJMRIssid, ConfigurationPreferences::getWiFiSSID()) != 0) ||
       (strcmp(configurationJMRIpassword, ConfigurationPreferences::getWiFiPassword()) != 0)) {
-    // ssid or password has changed
-
-    // String strWiFissid = String(configurationJMRIssid);
-    // String strWiFipassword = String(configurationJMRIpassword);
-
+    // SSID or password has changed.
+    // Store the new ssid and password in Preferences so it can be used if there is no access to the configuration file.
     Serial.printf("\n%6ld  Storing new ssid: %s", millis(), configurationJMRIssid);
 
-    // ConfigurationPreferences::putWiFiSSID(strWiFissid);
-    // ConfigurationPreferences::putWiFiPassword(strWiFipassword);
-    // === NOT been tested !!! ===  
     ConfigurationPreferences::putWiFiSSID(configurationJMRIssid);
     ConfigurationPreferences::putWiFiPassword(configurationJMRIpassword);
   }
