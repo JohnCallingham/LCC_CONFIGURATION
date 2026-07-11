@@ -76,26 +76,24 @@ This file is placed on all web servers that are specified in credentials.h
       "NodeID": "05.01.01.01.91.0A",
       "Update": {
         "Version": "1.0.6",
-        "Path": "http://diskstation2/LCC_Configuration/Binary_files/ESP32_6TOTI_WiFi",
+        "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_6TOTI_WiFi/main/firmware",
         "Filename": "firmware.bin"
       },
-      "JMRI_name": "London"
+      "JMRI_name": "Dorset"
     },
     {
       "MAC_Address": "74:4D:BD:A0:FC:5C",
       "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
       "NodeID": "05.01.01.01.91.09",
       "Update": {
-        "Version": "1.0.4",
-        "Path": "http://diskstation2/LCC_Configuration/Binary_files/ESP32_2Servo_2Frog_2TOTI_WiFi",
+        "Version": "1.0.6",
+        "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_2Servo_2Frog_2TOTI_WiFi/main/firmware",
         "Filename": "firmware.bin"
       },
-      "JMRI_name": "London"
+      "JMRI_name": "Dorset"
     }
   ]
 }
-
-
 ```
 
 
