@@ -6,7 +6,7 @@ A software component which can be used as part of an OpenLCB/LCC node. It has be
 It has been developed to allow a user to configure multiple nodes prior to and after deployment without needing physical access to the node. The user can remotely configure the following options;-
 - Allows a node to work with multiple WiFi networks (not concurrently) for configuration
 - Set the required Node ID
-- Set the WiFi network to which the node connects to access JMRI
+- Set the WiFi network to which the node connects to access JMRI's LCC hub
 - Update a node's firmware
 
 
@@ -26,15 +26,15 @@ Every time a node starts the process is as follows;-
 3. Each of these WiFi networks is tried in turn until one is found which is accessible.
 4. A connection is made to the first accessible WiFi network in the above list.
 5. The json configuration file indicated by configuration_url is downloaded and deserialised.
-6. Of the many records in the configuration file there will be only one which matches this node's MAC address and this record is used to configure the node.
+6. Of the many records in the configuration file there will only be one which matches this node's MAC address and this record is used to configure the node.
 7. If the Node ID stored in this record in the configuration file is different to the Node ID currently used by the node, the new Node ID is stored in Preferences to be used later when the node initialises.
 8. If the value of ```[Update][Version]``` in the json configuration file is different to that which is currently installed, then the file located at ```<[Update][Path]>/V<[Update][Version]>/<[Update][Filename]>``` is downloaded and installed. The ESP32 is then restarted to run the new firmware.
 9. If no new firmware has been downloaded, then processing continues.
 10. The WiFi connection which has downloaded the configuration file is disconnected.
-11. The configuration record for this node will contain the name of the WiFi network which the node will use to connect to JMRI.
+11. The configuration record for this node will contain the name of the WiFi network which the node will use to connect to JMRI's LCC hub.
 12. The credentials for this WiFi network are looked up from the credentials file and used to connect to JMRI.
 13. The node will connect to JMRI and continue its initialisation using the Node ID which has been stored in Preferences.
-14. If the user wishes that all the node's events IDs are recalculated to reflect the new Node ID, then the user should select the 'Clear Everything back to Factory Defaults' option in JMRI's CLI editor before restarting the node.
+14. If the user wishes that all the node's event IDs are recalculated to reflect the new Node ID, then the user should select the 'Clear Everything back to Factory Defaults' option in JMRI's CLI editor before restarting the node.
 
 ## Example json from credentials.h
 This file is hard coded into all nodes' software.
