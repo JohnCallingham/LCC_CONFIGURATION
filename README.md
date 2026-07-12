@@ -15,7 +15,7 @@ It has been developed to allow a user to configure multiple nodes prior to and a
 These files are involved;-
 - **ConfigurationOTA**. A class which allows a configuration file in json format to be hosted on a web server, external to the nodes, which provides a way for a user to alter various configuration properties of multiple nodes without needing physical access to the nodes.
 - **ConfigurationPreferences**. A namespace which provides support methods to allow various configuration data to be stored and retrieved using the Arduino Preferences system.
-- **credentials.h**. This file contains credential details (SSID and password) regarding available WiFi networks. This allows for development to take place in various locations and will use the available WiFi network in the current location. It also contains the URL of a configuration file, if one exists on that WiFi network.
+- **credentials.h**. This file contains credential details (SSID and password) regarding available WiFi networks. This allows for development to take place in various locations and will use the available WiFi network in the current location. It also contains the URL of a configuration file, if one is accessible from that WiFi network.
 - **configuration.json**. This file contains details of all LCC nodes.
 
 ## Operation
