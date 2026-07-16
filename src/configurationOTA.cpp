@@ -113,12 +113,38 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   // This is the configuration record for this node.
   Serial.printf("\n%6ld  Found matching MAC address: %s", millis(), elemConfiguration["MAC_Address"].as<const char *>());
 
+  /**
+   * To be changed so that configurationUpdatePath and configurationUpdateFilename
+   *  are determined from the Boards section of Configurations.json.
+   * We need to find the Boards record which matches the configurationBoard value.
+   * Confusingly, the complete JSON is contained in docConfigurations as this was correct originally.
+   * The Boards section is docConfigurations["Boards"].
+   */
+  // Find the matching Boards section.
+  int error = -1;
+  for (JsonObject elemBoard : docConfigurations["Boards"].as<JsonArray>()) {
+    if (elemBoard["Board"] == elemConfiguration["Board"]) {
+      Serial.printf("\n%6ld  Found a matching Boards section", millis());
+
+      strncpy(configurationUpdatePath, elemBoard["Path"], sizeof(configurationUpdatePath));
+      strncpy(configurationUpdateFilename, elemBoard["Filename"], sizeof(configurationUpdateFilename));
+
+      error = 0;
+      break;
+    }
+  }
+
+  if (error == -1) {
+    Serial.printf("\n%6ld  Cannot find a matching Boards section", millis());
+    return -1;
+  }
+
   // Copy so the data is not lost when the JsonObject goes out of scope.
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
   strncpy(configurationNodeID, elemConfiguration["NodeID"], sizeof(configurationNodeID));
-  strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
+  // strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
   strncpy(configurationUpdateVersion, elemConfiguration["Update"]["Version"], sizeof(configurationUpdateVersion));
-  strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
+  // strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
   strncpy(configurationJMRIname, elemConfiguration["JMRI_name"], sizeof(configurationJMRIname));
 
   Serial.printf("\n%6ld  Board = %s", millis(), this->board());
