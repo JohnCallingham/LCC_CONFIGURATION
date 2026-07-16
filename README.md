@@ -28,7 +28,7 @@ Every time a node starts the process is as follows;-
 5. The json configuration file indicated by configuration_url is downloaded and deserialised.
 6. Of the many records in the configuration file there will only be one which matches this node's MAC address and this record is used to configure the node.
 7. If the Node ID stored in this record in the configuration file is different to the Node ID currently used by the node, the new Node ID is stored in Preferences to be used later when the node initialises.
-8. If the value of ```[Update][Version]``` in the json configuration file is different to that which is currently installed, then the file located at ```<[Update][Path]>/V<[Update][Version]>/<[Update][Filename]>``` is downloaded and installed. The ESP32 is then restarted to run the new firmware.
+8. If the value of ```[Configurations][Update][Version]``` in the json configuration file is different to that which is currently installed, then the Boards section of the configuration file is used to determine the URL from which to download the new version. The file located at ```<[Boards][Path]>/V<[Configurations][Update][Version]/[Boards][Filename]``` is downloaded and installed. The ESP32 is then restarted to run the new firmware.
 9. If no new firmware has been downloaded, then processing continues.
 10. The WiFi connection which has downloaded the configuration file is disconnected.
 11. The configuration record for this node will contain the name of the WiFi network which the node will use to connect to JMRI's LCC hub.
@@ -68,16 +68,36 @@ This file is placed on all web servers that are specified in credentials.h
 
 ```json
 {
+  "Boards":
+  [
+    {
+      "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_2Servo_2Frog_2TOTI_WiFi/main/firmware",
+      "Filename": "firmware.bin"
+    },
+    {
+      "Board": "ESP32_6TOTI_WiFi",
+      "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_6TOTI_WiFi/main/firmware",
+      "Filename": "firmware.bin"
+    }
+  ],
   "Configurations":
   [
     {
-      "MAC_Address": "3C:84:27:C4:A7:B8",
-      "Board": "ESP32_6TOTI_WiFi",
-      "NodeID": "05.01.01.01.91.0A",
+      "MAC_Address": "48:CA:43:2E:FC:64",
+      "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "NodeID": "05.01.01.01.91.07",
       "Update": {
-        "Version": "1.0.6",
-        "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_6TOTI_WiFi/main/firmware",
-        "Filename": "firmware.bin"
+        "Version": "1.0.7"
+      },
+      "JMRI_name": "Dorset"
+    },
+    {
+      "MAC_Address": "48:CA:43:2E:FD:08",
+      "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "NodeID": "05.01.01.01.91.08",
+      "Update": {
+        "Version": "1.0.7"
       },
       "JMRI_name": "Dorset"
     },
@@ -86,18 +106,21 @@ This file is placed on all web servers that are specified in credentials.h
       "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
       "NodeID": "05.01.01.01.91.09",
       "Update": {
-        "Version": "1.0.6",
-        "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_2Servo_2Frog_2TOTI_WiFi/main/firmware",
-        "Filename": "firmware.bin"
+        "Version": "1.0.8"
       },
-      "JMRI_name": "Dorset"
+      "JMRI_name": "London"
+    },
+    {
+      "MAC_Address": "3C:84:27:C4:A7:B8",
+      "Board": "ESP32_6TOTI_WiFi",
+      "NodeID": "05.01.01.01.91.0A",
+      "Update": {
+        "Version": "1.0.8"
+      },
+      "JMRI_name": "London"
     }
   ]
 }
 ```
-
-
-
-
 
 
