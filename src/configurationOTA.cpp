@@ -27,7 +27,6 @@ void ConfigurationOTA::doConfiguration() {
   }
 }
 
-// int ConfigurationOTA::downloadConfiguration(const char* credentials, long ssidTimeoutmS) {
 int ConfigurationOTA::downloadConfiguration() {
   // Connect to an SSID which has a "configuration_url" stored.
 
@@ -46,16 +45,20 @@ int ConfigurationOTA::downloadConfiguration() {
   for (JsonObject elemCredential : docCredentials["Credentials"].as<JsonArray>()) {
     if (! elemCredential["configuration_url"].isNull()) {
       error = processConfigurationCredential(elemCredential);
-      if (error == 0) { break; } // No need to try any more SSIDs.
+      if ((error == 0) || (error == -1)) { break; } // No need to try any more SSIDs.
     }
   }
 
-  if (error == -1) {
-    Serial.printf("\n%6ld No available SSIDs", millis());
-  }
-
-  if (error != 0) {
-    Serial.printf("\n%6ld  Error when attempting to download a json configuration file", millis());
+  switch (error) {
+    case 0:
+      Serial.printf("\n%6ld Found matching MAC address", millis());
+      break;
+    case -1:
+      Serial.printf("\n%6ld No matching MAC address", millis());
+      break;
+    case -2:
+      Serial.printf("\n%6ld No available SSIDs", millis());
+      break;
   }
 
   Serial.printf("\n%6ld Exiting downloadConfiguration()", millis());
@@ -63,11 +66,16 @@ int ConfigurationOTA::downloadConfiguration() {
 }
 
 int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) {
+  /**
+   * Returns 0 if connected to this SSID and found a matching MAC address.
+   * Returns -1 if connected to this SSID but there are no matching MAC addresses.
+   * Returns -2 if this SSID is not connectable.
+   */
   Serial.printf("\n%6ld In processConfigurationCredential()", millis());
 
   // Try this SSID to see if we can connect to it.
   if (connectWiFi(elemCredential["ssid"], elemCredential["password"]) != 0) {
-    return -1;
+    return -2; 
   }
 
   // Successfully connected to this ssid.
@@ -98,7 +106,7 @@ int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) 
     if (error == 0) { break; } // We have found a matching MAC address so no need to continue round the for loop.
   }
 
-  Serial.printf("\n%6ld Exiting processConfigurationCredential()", millis());
+  Serial.printf("\n%6ld Exiting processConfigurationCredential(), error: %d", millis(), error);
   return error; // Returns -1 if no matching MAC address found.
 }
 
