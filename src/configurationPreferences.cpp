@@ -4,6 +4,7 @@ namespace ConfigurationPreferences {
   Preferences preferences;
   String ssid;
   String password;
+  String stringIP;
 
   NodeID getNodeID(NodeID defaultNodeID) {
     // Does the namespace NAMESPACE_NODEID exist?
@@ -67,6 +68,14 @@ namespace ConfigurationPreferences {
     return password.c_str();
   }
 
+  String getHubIPAddress() {
+    preferences.begin(NAMESPACE_HUB_IP_ADDRESS, true);
+    stringIP = preferences.getString("IP", "");
+    preferences.end();
+
+    return stringIP;
+  }
+
   void putNodeID(NodeID nodeID) {
     preferences.begin(NAMESPACE_NODEID);
     preferences.putUChar("ID0", nodeID.val[0]);
@@ -104,5 +113,11 @@ namespace ConfigurationPreferences {
 
   void putWiFiPassword(const char* wifiPassword) {
     putWiFiPassword(String(wifiPassword));
+  }
+
+  void putHubIPAddress(String IP) {
+    preferences.begin(NAMESPACE_HUB_IP_ADDRESS);
+    preferences.putString("IP", IP);
+    preferences.end();
   }
 }
