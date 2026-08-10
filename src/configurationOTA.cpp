@@ -72,7 +72,7 @@ int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) 
    * Also returns -1 if a MAC address has been found but there is no matching Boards section.
    * Returns -2 if this SSID is not connectable.
    */
-  Serial.printf("\n%6ld In processConfigurationCredential()", millis());
+  Serial.printf("\n%6ld [processConfigurationCredential] Entered", millis());
 
   // Try this SSID to see if we can connect to it.
   if (connectWiFi(elemCredential["ssid"], elemCredential["password"]) != 0) {
@@ -85,20 +85,20 @@ int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) 
   String payload = downloadJsonConfigurationFile(elemCredential["configuration_url"]);
 
   if (payload == "") {
-    Serial.printf("\n%6ld Unable to download json configuration file", millis());
+    Serial.printf("\n%6ld [processConfigurationCredential] Unable to download json configuration file", millis());
     return -1;
   }
 
   // We have successfully downloaded the json configuration file.
-  Serial.printf("\n%6ld Downloaded json configuration file", millis());
+  Serial.printf("\n%6ld [processConfigurationCredential] Downloaded json configuration file", millis());
 
   // Deserialise the json configuration file.
   DeserializationError errorConfigurations = deserializeJson(docConfigurations, payload.c_str());
   if (errorConfigurations != DeserializationError::Ok) {
-    Serial.printf("\n%6ld  Error deserialising configuration", millis());
+    Serial.printf("\n%6ld [processConfigurationCredential] Error deserialising configuration", millis());
     return -1; // Try other SSIDs.
   }
-  Serial.printf("\n%6ld Deserialised json configuration file", millis());
+  Serial.printf("\n%6ld [processConfigurationCredential] Deserialised json configuration file", millis());
 
   // Step through all configurations looking for one which matches our MAC address.
   int error = -1;
@@ -111,7 +111,7 @@ int ConfigurationOTA::processConfigurationCredential(JsonObject elemCredential) 
     error = -1; // Change error value to stop looking at other SSIDs.
   }
 
-  Serial.printf("\n%6ld Exiting processConfigurationCredential(), error: %d", millis(), error);
+  Serial.printf("\n%6ld [processConfigurationCredential] Exiting, error: %d", millis(), error);
   return error; // Returns -1 if no matching MAC address found.
 }
 
