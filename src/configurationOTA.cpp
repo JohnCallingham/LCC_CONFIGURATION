@@ -30,15 +30,15 @@ void ConfigurationOTA::doConfiguration() {
 int ConfigurationOTA::downloadConfiguration() {
   // Connect to an SSID which has a "configuration_url" stored.
 
-  Serial.printf("\n%6ld Contents of credentials.h;-%s", millis(), this->credentials);
+  Serial.printf("\n%6ld [downloadConfiguration] Contents of credentials.h;-%s", millis(), this->credentials);
 
   // Deserialise the json credentials file.
   DeserializationError errorCredentials = deserializeJson(docCredentials, this->credentials);
   if (errorCredentials != DeserializationError::Ok) {
-    Serial.printf("\n%6ld Error deserialising credentials", millis());
+    Serial.printf("\n%6ld [downloadConfiguration] Error deserialising credentials", millis());
     return -1;
   }
-  Serial.printf("\n%6ld Deserialised credentials file", millis());
+  Serial.printf("\n%6ld [downloadConfiguration] Deserialised credentials file", millis());
 
   // Try all SSIDs in the credentials file which have a non zero "configuration_url" value.
   int error = -1;
@@ -51,17 +51,17 @@ int ConfigurationOTA::downloadConfiguration() {
 
   switch (error) {
     case 0:
-      Serial.printf("\n%6ld Found matching MAC address", millis());
+      Serial.printf("\n%6ld [downloadConfiguration] Found matching MAC address", millis());
       break;
     case -1:
-      Serial.printf("\n%6ld No matching MAC address or no Boards section", millis());
+      Serial.printf("\n%6ld [downloadConfiguration] No matching MAC address or no Boards section", millis());
       break;
     case -2:
-      Serial.printf("\n%6ld No available SSIDs", millis());
+      Serial.printf("\n%6ld [downloadConfiguration] No available SSIDs", millis());
       break;
   }
 
-  Serial.printf("\n%6ld Exiting downloadConfiguration()", millis());
+  Serial.printf("\n%6ld [downloadConfiguration] Exiting", millis());
   return error;
 }
 
@@ -188,18 +188,23 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
     strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
   }
 
-  Serial.printf("\n%6ld  Board = %s", millis(), this->board());
-  Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
-  Serial.printf("\n%6ld  IPAddressString = %s", millis(), this->configurationIPAddress);
+  /**
+   * Display the downloaded configuration data.
+   */
+  Serial.printf("\n%6ld [processConfiguration] Downloaded data;-", millis());
+
+  Serial.printf("\n%6ld  - Board = %s", millis(), this->board());
+  Serial.printf("\n%6ld  - NodeID = %s", millis(), this->printNodeID(this->nodeID()));
+  Serial.printf("\n%6ld  - IPAddressString = %s", millis(), this->configurationIPAddress);
   if (ipAddressPresent) {
-    Serial.printf("\n%6ld  IPAddress = %s", millis(), this->ipAddress().toString().c_str());
+    Serial.printf("\n%6ld  - IPAddress = %s", millis(), this->ipAddress().toString().c_str());
   } else {
-    Serial.printf("\n%6ld  IPAddress = Not present", millis());
+    Serial.printf("\n%6ld  - IPAddress = Not present", millis());
   }
-  Serial.printf("\n%6ld  UpdatePath = %s", millis(), this->updatePath());
-  Serial.printf("\n%6ld  UpdateVersion = %s", millis(), this->updateVersion());
-  Serial.printf("\n%6ld  UpdateFilename = %s", millis(), this->updateFilename());
-  Serial.printf("\n%6ld  JMRIname = %s", millis(), this->jmriName());
+  Serial.printf("\n%6ld  - UpdatePath = %s", millis(), this->updatePath());
+  Serial.printf("\n%6ld  - UpdateVersion = %s", millis(), this->updateVersion());
+  Serial.printf("\n%6ld  - UpdateFilename = %s", millis(), this->updateFilename());
+  Serial.printf("\n%6ld  - JMRIname = %s", millis(), this->jmriName());
 
   // Look up the SSID and Password from credentials.h for JMRI_name.
   // Step through all credential records looking for one which matches JMRI_name.
@@ -216,25 +221,25 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
 }
 
 void ConfigurationOTA::processJMRICredential(JsonObject elemCredential) {
-  Serial.printf("\n%6ld In processJMRICredential()", millis());
+  Serial.printf("\n%6ld [processJMRICredential] Entered", millis());
 
   strncpy(configurationJMRIssid, elemCredential["ssid"], sizeof(configurationJMRIssid));
   strncpy(configurationJMRIpassword, elemCredential["password"], sizeof(configurationJMRIpassword));
 
-  Serial.printf("\n%6ld  configurationJMRIssid = %s", millis(), configurationJMRIssid);
-  Serial.printf("\n%6ld  ConfigurationPreferences::getWiFiSSID() = %s", millis(), ConfigurationPreferences::getWiFiSSID());
+  Serial.printf("\n%6ld  - configurationJMRIssid = %s", millis(), configurationJMRIssid);
+  Serial.printf("\n%6ld  - ConfigurationPreferences::getWiFiSSID() = %s", millis(), ConfigurationPreferences::getWiFiSSID());
 
   // If either of ssid or password has changed from that stored in Preferences, update Preferences.
   if ((strcmp(configurationJMRIssid, ConfigurationPreferences::getWiFiSSID()) != 0) ||
       (strcmp(configurationJMRIpassword, ConfigurationPreferences::getWiFiPassword()) != 0)) {
     // SSID or password has changed.
     // Store the new ssid and password in Preferences so it can be used if there is no access to the configuration file.
-    Serial.printf("\n%6ld  Storing new ssid: %s", millis(), configurationJMRIssid);
+    Serial.printf("\n%6ld [processJMRICredential]  Storing new ssid: %s", millis(), configurationJMRIssid);
 
     ConfigurationPreferences::putWiFiSSID(configurationJMRIssid);
     ConfigurationPreferences::putWiFiPassword(configurationJMRIpassword);
   }
-  Serial.printf("\n%6ld Exiting processJMRICredential()", millis());
+  Serial.printf("\n%6ld [processJMRICredential] Exiting", millis());
 }
 
 void ConfigurationOTA::checkForFirmwareUpdate(String swVersion) {
