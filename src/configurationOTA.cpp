@@ -174,6 +174,7 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
 
   Serial.printf("\n%6ld  Board = %s", millis(), this->board());
   Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
+  Serial.printf("\n%6ld  IPAddress = %s", millis(), this->ipAddress());
   Serial.printf("\n%6ld  UpdatePath = %s", millis(), this->updatePath());
   Serial.printf("\n%6ld  UpdateVersion = %s", millis(), this->updateVersion());
   Serial.printf("\n%6ld  UpdateFilename = %s", millis(), this->updateFilename());

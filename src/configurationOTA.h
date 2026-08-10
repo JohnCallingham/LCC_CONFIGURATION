@@ -41,6 +41,7 @@ class ConfigurationOTA {
     const char* jmriSSID() { return this->configurationJMRIssid; }
     const char* jmriPassword() { return this->configurationJMRIpassword; }
     const char* jmriName() { return this->configurationJMRIname; }
+    IPAddress ipAddress() { return IPAddress().fromString(this->configurationIPAddress); }
 
     // Setter methods
     void setCredentials(const char* credentials) { this->credentials = credentials; }
