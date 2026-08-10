@@ -169,10 +169,10 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   bool ipAddressPresent = false;
 
   if (elemConfiguration["IP_Address"].isNull()) {
-    Serial.printf("\n%6ld [processConfiguration] No IP address stored for this node", millis());
+    Serial.printf("\n%6ld [processConfiguration] No IP address present for this node", millis());
     configurationIPAddress[0] = '\0'; // Set to empty string.
   } else {
-    Serial.printf("\n%6ld [processConfiguration] IP address stored for this node", millis());
+    Serial.printf("\n%6ld [processConfiguration] IP address present for this node", millis());
     strncpy(configurationIPAddress, elemConfiguration["IP_Address"], sizeof(configurationIPAddress));
     if (configurationIP.fromString(configurationIPAddress)) { ipAddressPresent = true; } // Initialize the IPAddress object
   }
