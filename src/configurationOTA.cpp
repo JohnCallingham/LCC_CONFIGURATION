@@ -132,8 +132,6 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   Serial.printf("\n%6ld [processConfiguration] Found matching MAC address: %s", millis(), elemConfiguration["MAC_Address"].as<const char *>());
 
   /**
-   * To be changed so that configurationUpdatePath and configurationUpdateFilename
-   *  are determined from the Boards section of Configurations.json.
    * We need to find the Boards record which matches the configurationBoard value.
    * Confusingly, the complete JSON is contained in docConfigurations as this was correct originally.
    * The Boards section is docConfigurations["Boards"].
@@ -157,13 +155,22 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
     return error;
   }
 
+  /**
+   * Poss allow a path and filename here to override the path and filename in the Boards section.
+   * This would allow a file to be downloaded from a different location than specified in the Boards section.  
+   */
   // Copy so the data is not lost when the JsonObject goes out of scope.
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
   strncpy(configurationNodeID, elemConfiguration["NodeID"], sizeof(configurationNodeID));
-  // strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
   strncpy(configurationUpdateVersion, elemConfiguration["Update"]["Version"], sizeof(configurationUpdateVersion));
-  // strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
   strncpy(configurationJMRIname, elemConfiguration["JMRI_name"], sizeof(configurationJMRIname));
+  strncpy(configurationIPAddress, elemConfiguration["IP_Address"], sizeof(configurationIPAddress));
+
+  
+  // strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
+  // strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
+
+
 
   Serial.printf("\n%6ld  Board = %s", millis(), this->board());
   Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));

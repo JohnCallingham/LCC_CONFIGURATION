@@ -78,6 +78,7 @@ class ConfigurationOTA {
     char configurationUpdateVersion[20] = "";
     char configurationUpdateFilename[20] = "";
     char configurationJMRIname[50] = "";
+    char configurationIPAddress[20] = "";
 
     // The values from the json credentials file.
     char configurationJMRIssid[50] = "";
