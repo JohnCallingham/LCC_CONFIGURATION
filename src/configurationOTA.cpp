@@ -121,15 +121,15 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
    * Returns -1 if the MAC address does not match.
    * Returns -2 if there is no matching Boards section.
    */
-  Serial.printf("\n%6ld In processConfiguration()", millis());
+  Serial.printf("\n%6ld [processConfiguration] Entered", millis());
 
   if (! (elemConfiguration["MAC_Address"] == macAddress)) { // != doesn't work !!
-    Serial.printf("\n%6ld  Non matching MAC address: %s", millis(), elemConfiguration["MAC_Address"].as<const char *>());
+    Serial.printf("\n%6ld [processConfiguration] Non matching MAC address: %s", millis(), elemConfiguration["MAC_Address"].as<const char *>());
     return -1;
   }
 
   // This is the configuration record for this node.
-  Serial.printf("\n%6ld  Found matching MAC address: %s", millis(), elemConfiguration["MAC_Address"].as<const char *>());
+  Serial.printf("\n%6ld [processConfiguration] Found matching MAC address: %s", millis(), elemConfiguration["MAC_Address"].as<const char *>());
 
   /**
    * To be changed so that configurationUpdatePath and configurationUpdateFilename
@@ -142,7 +142,7 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   int error = -2;
   for (JsonObject elemBoard : docConfigurations["Boards"].as<JsonArray>()) {
     if (elemBoard["Board"] == elemConfiguration["Board"]) {
-      Serial.printf("\n%6ld  Found a matching Boards section", millis());
+      Serial.printf("\n%6ld [processConfiguration] Found a matching Boards section", millis());
 
       strncpy(configurationUpdatePath, elemBoard["Path"], sizeof(configurationUpdatePath));
       strncpy(configurationUpdateFilename, elemBoard["Filename"], sizeof(configurationUpdateFilename));
@@ -153,7 +153,7 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   }
 
   if (error == -2) {
-    Serial.printf("\n%6ld  Cannot find a matching Boards section", millis());
+    Serial.printf("\n%6ld [processConfiguration] Cannot find a matching Boards section", millis());
     return error;
   }
 
@@ -181,7 +181,7 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
     }
   }
 
-  Serial.printf("\n%6ld Exiting processConfiguration()", millis());
+  Serial.printf("\n%6ld [processConfiguration] Exiting, error: %d", millis(), error);
   // return 0;
   return error;
 }
