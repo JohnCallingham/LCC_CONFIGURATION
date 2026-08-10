@@ -41,7 +41,9 @@ class ConfigurationOTA {
     const char* jmriSSID() { return this->configurationJMRIssid; }
     const char* jmriPassword() { return this->configurationJMRIpassword; }
     const char* jmriName() { return this->configurationJMRIname; }
-    IPAddress ipAddress() { return IPAddress().fromString(this->configurationIPAddress); }
+    const char* ipAddressString() { return this->configurationIPAddress; }
+    IPAddress ipAddress() { return this->configurationIP; }
+
 
     // Setter methods
     void setCredentials(const char* credentials) { this->credentials = credentials; }
@@ -80,6 +82,7 @@ class ConfigurationOTA {
     char configurationUpdateFilename[20] = "";
     char configurationJMRIname[50] = "";
     char configurationIPAddress[20] = "";
+    IPAddress configurationIP;
 
     // The values from the json credentials file.
     char configurationJMRIssid[50] = "";

@@ -166,15 +166,21 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   strncpy(configurationJMRIname, elemConfiguration["JMRI_name"], sizeof(configurationJMRIname));
   strncpy(configurationIPAddress, elemConfiguration["IP_Address"], sizeof(configurationIPAddress));
 
-  
+  // Initialize the IPAddress object
+  configurationIP.fromString(configurationIPAddress);
+
   // strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
   // strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
 
+  /**
+   * Need to check that a node with no IP address stored works OK.
+   */
 
 
   Serial.printf("\n%6ld  Board = %s", millis(), this->board());
   Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
-  Serial.printf("\n%6ld  IPAddress = %s", millis(), this->ipAddress());
+  // Serial.printf("\n%6ld  IPAddressString = %s", millis(), this->configurationIPAddress);
+  Serial.printf("\n%6ld  IPAddress = %s", millis(), this->ipAddress().toString().c_str());
   Serial.printf("\n%6ld  UpdatePath = %s", millis(), this->updatePath());
   Serial.printf("\n%6ld  UpdateVersion = %s", millis(), this->updateVersion());
   Serial.printf("\n%6ld  UpdateFilename = %s", millis(), this->updateFilename());
