@@ -155,32 +155,45 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
     return error;
   }
 
-  /**
-   * Poss allow a path and filename here to override the path and filename in the Boards section.
-   * This would allow a file to be downloaded from a different location than specified in the Boards section.  
-   */
   // Copy so the data is not lost when the JsonObject goes out of scope.
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
   strncpy(configurationNodeID, elemConfiguration["NodeID"], sizeof(configurationNodeID));
   strncpy(configurationUpdateVersion, elemConfiguration["Update"]["Version"], sizeof(configurationUpdateVersion));
   strncpy(configurationJMRIname, elemConfiguration["JMRI_name"], sizeof(configurationJMRIname));
-  strncpy(configurationIPAddress, elemConfiguration["IP_Address"], sizeof(configurationIPAddress));
 
-  // Initialize the IPAddress object
-  configurationIP.fromString(configurationIPAddress);
+  /**
+   * Check whether there is an IPAddress stored for this node.
+   * Ignores an incorrectly formatted IP address, which will be treated as not present.
+   */
+  bool ipAddressPresent = false;
+
+  if (elemConfiguration["IP_Address"].isNull()) {
+    Serial.printf("\n%6ld [processConfiguration] No IP address stored for this node", millis());
+    configurationIPAddress[0] = '\0'; // Set to empty string.
+  } else {
+    Serial.printf("\n%6ld [processConfiguration] IP address stored for this node", millis());
+    strncpy(configurationIPAddress, elemConfiguration["IP_Address"], sizeof(configurationIPAddress));
+    if (configurationIP.fromString(configurationIPAddress)) { ipAddressPresent = true; } // Initialize the IPAddress object
+  }
+
+  /**
+   * Poss allow a path and filename here to override the path and filename in the Boards section.
+   * This would allow a file to be downloaded from a different location than specified in the Boards section.  
+   */
 
   // strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
   // strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
 
-  /**
-   * Need to check that a node with no IP address stored works OK.
-   */
 
 
   Serial.printf("\n%6ld  Board = %s", millis(), this->board());
   Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
-  // Serial.printf("\n%6ld  IPAddressString = %s", millis(), this->configurationIPAddress);
-  Serial.printf("\n%6ld  IPAddress = %s", millis(), this->ipAddress().toString().c_str());
+  Serial.printf("\n%6ld  IPAddressString = %s", millis(), this->configurationIPAddress);
+  if (ipAddressPresent) {
+    Serial.printf("\n%6ld  IPAddress = %s", millis(), this->ipAddress().toString().c_str());
+  } else {
+    Serial.printf("\n%6ld  IPAddress = Not present", millis());
+  }
   Serial.printf("\n%6ld  UpdatePath = %s", millis(), this->updatePath());
   Serial.printf("\n%6ld  UpdateVersion = %s", millis(), this->updateVersion());
   Serial.printf("\n%6ld  UpdateFilename = %s", millis(), this->updateFilename());
