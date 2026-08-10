@@ -79,7 +79,7 @@ class ConfigurationOTA {
     char configurationNodeID[20] = "";
     char configurationUpdatePath[200] = "";
     char configurationUpdateVersion[20] = "";
-    char configurationUpdateFilename[20] = "";
+    char configurationUpdateFilename[200] = "";
     char configurationJMRIname[50] = "";
     char configurationIPAddress[20] = "";
     IPAddress configurationIP = IPAddress(0, 0, 0, 0);

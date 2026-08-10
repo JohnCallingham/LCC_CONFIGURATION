@@ -180,6 +180,13 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
    * Poss allow a path and filename here to override the path and filename in the Boards section.
    * This would allow a file to be downloaded from a different location than specified in the Boards section.  
    */
+  if (! elemConfiguration["Update"]["Path"].isNull()) {
+    strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
+  }
+  if (! elemConfiguration["Update"]["Filename"].isNull()) {
+    strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
+  }
+
 
   // strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
   // strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
