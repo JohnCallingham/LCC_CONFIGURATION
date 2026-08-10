@@ -349,7 +349,7 @@ int ConfigurationOTA::connectWiFi(String ssid, String password) {
   // Timeout if no response.
   long timeoutTime = millis() + ssidTimeoutmS;
 
-  Serial.printf("\n%6ld Connecting to %s ", millis(), ssid.c_str());
+  Serial.printf("\n%6ld [connectWiFi] Connecting to %s ", millis(), ssid.c_str());
 
   WiFi.begin(ssid, password);
 	while ((! WiFi.isConnected()) && (millis() < timeoutTime)) {
@@ -358,28 +358,29 @@ int ConfigurationOTA::connectWiFi(String ssid, String password) {
 	}
 
   if (! WiFi.isConnected()) {
-    Serial.printf("\n%6ld Timed out connecting to %s", millis(), ssid.c_str());
+    Serial.printf("\n%6ld [connectWiFi] Timed out connecting to %s", millis(), ssid.c_str());
     return -1;
   }
 
   macAddress = WiFi.macAddress();
 
-  Serial.printf("\n%6ld Connected to %s", millis(), ssid.c_str());
-  Serial.printf("\n%6ld MAC address = %s", millis(), macAddress.c_str());
+  Serial.printf("\n%6ld [connectWiFi] Connected to %s", millis(), ssid.c_str());
+  Serial.printf("\n%6ld [connectWiFi] MAC address = %s", millis(), macAddress.c_str());
 
   return 0;
 }
 
 String ConfigurationOTA::downloadJsonConfigurationFile(String jsonURL) {
   // Returns the JSON text as a String.
-  Serial.printf("\n%6ld Downloading configuration_url: %s", millis(), jsonURL.c_str());
+  Serial.printf("\n%6ld [downloadJsonConfigurationFile] Downloading configuration_url;-", millis());
+  Serial.printf("\n%6ld   - %s", millis(), jsonURL.c_str());
 
   String Payload;
   int httpResponseCode = downloadJson(jsonURL.c_str(), Payload);
   if (httpResponseCode != 200)
       return "";
   
-  Serial.printf("\n%6ld Contents of configuration_url;-\n%s", millis(), Payload.c_str());
+  Serial.printf("\n%6ld [downloadJsonConfigurationFile] Contents of configuration_url;-\n%s", millis(), Payload.c_str());
 
   return Payload;
 }
