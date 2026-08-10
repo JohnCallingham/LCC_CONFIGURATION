@@ -22,7 +22,7 @@ void ConfigurationOTA::doConfiguration() {
 
   // We've finished performing configuration.
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.printf("\n%6ld Disconnecting from configuration WiFi: %s", millis(), WiFi.SSID());
+    Serial.printf("\n%6ld [doConfiguration] Disconnecting from configuration WiFi: %s", millis(), WiFi.SSID());
     WiFi.disconnect(); 
   }
 }
