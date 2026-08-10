@@ -14,6 +14,7 @@
 #define NAMESPACE_FACTORY_RESET "Reset"
 #define NAMESPACE_WIFI "WiFi"
 #define NAMESPACE_HUB_IP_ADDRESS "HubIP"
+#define NAMESPACE_NODE_IP_ADDRESS "NodeIP"
 
 namespace ConfigurationPreferences {
 
@@ -22,6 +23,7 @@ namespace ConfigurationPreferences {
   const char*  getWiFiSSID();
   const char* getWiFiPassword();
   String getHubIPAddress();
+  String getNodeIPAddress();
 
   void putNodeID(NodeID nodeID);
   void putFactoryReset(int factoryReset);
@@ -30,5 +32,6 @@ namespace ConfigurationPreferences {
   void putWiFiPassword(String wifiPassword);
   void putWiFiPassword(const char* wifiPassword);
   void putHubIPAddress(String IP);
+  void putNodeIPAddress(String IP);
     
 }

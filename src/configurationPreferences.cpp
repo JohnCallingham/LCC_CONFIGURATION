@@ -76,6 +76,14 @@ namespace ConfigurationPreferences {
     return stringIP;
   }
 
+  String getNodeIPAddress() {
+    preferences.begin(NAMESPACE_NODE_IP_ADDRESS, true);
+    stringIP = preferences.getString("IP", "");
+    preferences.end();
+
+    return stringIP;
+  }
+
   void putNodeID(NodeID nodeID) {
     preferences.begin(NAMESPACE_NODEID);
     preferences.putUChar("ID0", nodeID.val[0]);
@@ -120,4 +128,11 @@ namespace ConfigurationPreferences {
     preferences.putString("IP", IP);
     preferences.end();
   }
+
+  void putNodeIPAddress(String IP) {
+    preferences.begin(NAMESPACE_NODE_IP_ADDRESS);
+    preferences.putString("IP", IP);
+    preferences.end();
+  }
+
 }
