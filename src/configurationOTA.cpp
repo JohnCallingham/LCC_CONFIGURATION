@@ -136,7 +136,6 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
    * Confusingly, the complete JSON is contained in docConfigurations as this was correct originally.
    * The Boards section is docConfigurations["Boards"].
    */
-  // Find the matching Boards section.
   int error = -2;
   for (JsonObject elemBoard : docConfigurations["Boards"].as<JsonArray>()) {
     if (elemBoard["Board"] == elemConfiguration["Board"]) {
@@ -155,7 +154,9 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
     return error;
   }
 
-  // Copy so the data is not lost when the JsonObject goes out of scope.
+  /**
+   * Copy all configuration data so the data is not lost when the JsonObject goes out of scope.
+   */
   strncpy(configurationBoard, elemConfiguration["Board"], sizeof(configurationBoard));
   strncpy(configurationNodeID, elemConfiguration["NodeID"], sizeof(configurationNodeID));
   strncpy(configurationUpdateVersion, elemConfiguration["Update"]["Version"], sizeof(configurationUpdateVersion));
@@ -177,7 +178,7 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   }
 
   /**
-   * Poss allow a path and filename here to override the path and filename in the Boards section.
+   * Allow a path and filename here to override the path and filename in the Boards section.
    * This would allow a file to be downloaded from a different location than specified in the Boards section.  
    */
   if (! elemConfiguration["Update"]["Path"].isNull()) {
@@ -186,12 +187,6 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   if (! elemConfiguration["Update"]["Filename"].isNull()) {
     strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
   }
-
-
-  // strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
-  // strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
-
-
 
   Serial.printf("\n%6ld  Board = %s", millis(), this->board());
   Serial.printf("\n%6ld  NodeID = %s", millis(), this->printNodeID(this->nodeID()));
