@@ -51,7 +51,7 @@ int ConfigurationOTA::downloadConfiguration() {
 
   switch (error) {
     case 0:
-      Serial.printf("\n%6ld [downloadConfiguration] Found matching MAC address", millis());
+      // Serial.printf("\n%6ld [downloadConfiguration] Found matching MAC address", millis());
       break;
     case -1:
       Serial.printf("\n%6ld [downloadConfiguration] No matching MAC address or no Boards section", millis());
@@ -245,19 +245,20 @@ void ConfigurationOTA::processJMRICredential(JsonObject elemCredential) {
 void ConfigurationOTA::checkForFirmwareUpdate(String swVersion) {
   // Called from main.cpp
 
-  Serial.printf("\n%6ld In checkForFirmwareUpdate()", millis());
-  Serial.printf("\n%6ld  installed version is %s, configuration version is %s", millis(), swVersion.c_str(), configurationUpdateVersion);
+  Serial.printf("\n%6ld [checkForFirmwareUpdate] Entering", millis());
+  Serial.printf("\n%6ld  - installed version is %s", millis(), swVersion.c_str());
+  Serial.printf("\n%6ld  - configuration version is %s", millis(), configurationUpdateVersion);
 
   // Check that Update_Path, Update_Version and Update_Filename have been successfully downloaded.
   if ((strlen(configurationUpdatePath) == 0) || (strlen(configurationUpdateVersion) == 0) || (strlen(configurationUpdateFilename) == 0)) {
-    Serial.printf("\n%6ld  Any of Update_Path, Update_Version or Update_Filename are not present", millis());
+    Serial.printf("\n%6ld  [checkForFirmwareUpdate] Any of Update_Path, Update_Version or Update_Filename are not present", millis());
     return;
   }
 
   // Check to see if the installed version is different to [Update][Version].
   if (strcmp(swVersion.c_str(), configurationUpdateVersion) == 0) {
     // Versions are the same so nothing more to do.
-    Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
+    Serial.printf("\n%6ld [checkForFirmwareUpdate] Exiting", millis());
     return;
   }
 
@@ -265,11 +266,11 @@ void ConfigurationOTA::checkForFirmwareUpdate(String swVersion) {
   char updateURL[250];
   sprintf(updateURL, "%s/V%s/%s", configurationUpdatePath, configurationUpdateVersion, configurationUpdateFilename);
 
-  Serial.printf("\n%6ld  Starting firmware update", millis());
+  Serial.printf("\n%6ld [checkForFirmwareUpdate] Starting firmware update", millis());
 
   int error = doFirmwareUpdate(updateURL);
 
-  Serial.printf("\n%6ld Exiting checkForFirmwareUpdate()", millis());
+  Serial.printf("\n%6ld [checkForFirmwareUpdate] Exiting", millis());
 }
 
 int ConfigurationOTA::doFirmwareUpdate(const char* updateURL) {
