@@ -189,7 +189,12 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   } else {
     Serial.printf("\n%6ld [processConfiguration] IP address present for this node", millis());
     strncpy(configurationIPAddress, elemConfiguration["IP_Address"], sizeof(configurationIPAddress));
-    if (configurationIP.fromString(configurationIPAddress)) { ipAddressPresent = true; } // Initialize the IPAddress object
+    if (configurationIP.fromString(configurationIPAddress)) { // Initialize the IPAddress object
+      ipAddressPresent = true;
+    } else {
+      Serial.printf("\n%6ld [processConfiguration] Invalid IP address format: %s", millis(), configurationIPAddress);
+      configurationIPAddress[0] = '\0'; // Set to empty string.
+    }
   }
 
   /**
