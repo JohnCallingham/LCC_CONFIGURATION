@@ -135,4 +135,8 @@ namespace ConfigurationPreferences {
     preferences.end();
   }
 
+  void putNodeIPAddress(const char* IP) {
+    putNodeIPAddress(String(IP));
+  }
+
 }

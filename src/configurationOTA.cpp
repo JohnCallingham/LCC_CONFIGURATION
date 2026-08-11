@@ -4,20 +4,35 @@
 void ConfigurationOTA::doConfiguration() {
   int error = downloadConfiguration();
 
-  if (error == 0) {
-    // Configuration data was successfully downloaded.
+  if (error != 0) {
+    Serial.printf("\n%6ld [doConfiguration] Error downloading configuration", millis());
+    return;
+  }
 
-    // If a newer firmware is available, then use it to update the existing firmware and restart.
-    checkForFirmwareUpdate(this->currentVersion);
+  // Configuration data was successfully downloaded.
 
-    // Compare the Node ID in the configuration data with the Node ID stored in Preferences.
-    // If they are different, then store the new Node ID in Preferences.
-    // NodeID preferencesNodeID = ConfigurationPreferences::getNodeID(NodeID(NODE_ADDRESS));
-    NodeID preferencesNodeID = ConfigurationPreferences::getNodeID(defaultNodeID);
-    if (! this->nodeID().equals(& preferencesNodeID)) {
-      // Store the new Node ID in Preferences.
-      ConfigurationPreferences::putNodeID(this->nodeID());
-    }
+  // If a newer firmware is available, then use it to update the existing firmware and restart.
+  checkForFirmwareUpdate(this->currentVersion);
+
+  /**
+   * Compare the Node ID in the configuration data with the Node ID stored in Preferences.
+   * If they are different, then store the new Node ID in Preferences.
+   */
+  NodeID preferencesNodeID = ConfigurationPreferences::getNodeID(defaultNodeID);
+  if (! this->nodeID().equals(& preferencesNodeID)) {
+    // Store the new Node ID in Preferences.
+    Serial.printf("\n%6ld [doConfiguration] Storing new Node ID in Preferences: %s", millis(), this->printNodeID(this->nodeID()));
+    ConfigurationPreferences::putNodeID(this->nodeID());
+  }
+
+  /**
+   * Compare the node IP address in the configuration data with the node IP address stored in Preferences.
+   * If they are different, then store the new node IP address in Preferences.
+   */
+  if (strcmp(this->ipAddressString(), ConfigurationPreferences::getNodeIPAddress().c_str()) != 0) {
+    // Store the new node IP address in Preferences.
+    Serial.printf("\n%6ld [doConfiguration] Storing new node IP address in Preferences: %s", millis(), this->ipAddressString());
+    ConfigurationPreferences::putNodeIPAddress(this->ipAddressString());
   }
 
   // We've finished performing configuration.
