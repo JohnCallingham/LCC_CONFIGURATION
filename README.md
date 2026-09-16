@@ -79,10 +79,32 @@ This file is placed on all web servers that are specified in credentials.h
       "Board": "ESP32_6TOTI_WiFi",
       "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_6TOTI_WiFi/main/firmware",
       "Filename": "firmware.bin"
+    },
+    {
+      "Board": "ESP32_4ToF_Wifi",
+      "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_4ToF_Wifi/main/firmware",
+      "Filename": "firmware.bin"
+    },
+    {
+      "Board": "ESP32_Train_Automation",
+      "Path": "",
+      "Filename": "firmware.bin"
     }
   ],
   "Configurations":
   [
+    {
+      "MAC_Address": "20:6E:F1:33:93:84",
+      "Board": "ESP32_4ToF_Wifi",
+      "IP_Address": "192.168.1.5",
+      "NodeID": "05.01.01.01.91.05",
+      "Update": {
+        "Version": "1.0.4",
+        "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_4ToF_Wifi/main/firmware",
+        "Filename": "firmware.bin"
+      },
+      "JMRI_name": "London"
+    },
     {
       "MAC_Address": "48:CA:43:2E:FC:64",
       "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
@@ -104,9 +126,12 @@ This file is placed on all web servers that are specified in credentials.h
     {
       "MAC_Address": "74:4D:BD:A0:FC:5C",
       "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "IP_Address": "192.168.1.9",
       "NodeID": "05.01.01.01.91.09",
       "Update": {
-        "Version": "1.0.8"
+        "Version": "1.1.1",
+        "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_2Servo_2Frog_2TOTI_WiFi/main/firmware",
+        "Filename": "firmware.bin"
       },
       "JMRI_name": "London"
     },
@@ -118,9 +143,19 @@ This file is placed on all web servers that are specified in credentials.h
         "Version": "1.0.8"
       },
       "JMRI_name": "London"
+    },
+    {
+      "MAC_Address": "E8:F6:0A:BF:79:94",
+      "Board": "ESP32_Train_Automation",
+      "NodeID": "05.01.01.01.91.80",
+      "Update": {
+        "Version": "1.0.0"
+      },
+      "JMRI_name": "London"
     }
   ]
 }
+
 ```
 
 
