@@ -166,7 +166,21 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
 
   if (error == -2) {
     Serial.printf("\n%6ld [processConfiguration] Cannot find a matching Boards section", millis());
-    return error;
+
+    /**
+     * If there is no matching Boards section then attempt to use any info in the specific node detail.
+     * If there is a Path and Filename for this MAC adddress
+     *  in the main record on the Configurations section, we can use that instead of
+     *  data in the Boards section.
+     */
+    if ((! elemConfiguration["Update"]["Path"].isNull()) && (! elemConfiguration["Update"]["Filename"].isNull())) {
+      // Both Path and Filename exists in the Configuration section.
+      Serial.printf("\n%6ld [processConfiguration] Downloading Path and Filename from Configuration section.", millis());
+      strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
+      strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
+    } else {
+      return error;
+    }
   }
 
   /**
@@ -200,6 +214,7 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
   /**
    * Allow a path and filename here to override the path and filename in the Boards section.
    * This would allow a file to be downloaded from a different location than specified in the Boards section.  
+   * This may duplicate the code above if there is no matching Boards section.
    */
   if (! elemConfiguration["Update"]["Path"].isNull()) {
     strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
