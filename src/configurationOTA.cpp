@@ -178,6 +178,9 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
       Serial.printf("\n%6ld [processConfiguration] Downloading Path and Filename from Configuration section.", millis());
       strncpy(configurationUpdatePath, elemConfiguration["Update"]["Path"], sizeof(configurationUpdatePath));
       strncpy(configurationUpdateFilename, elemConfiguration["Update"]["Filename"], sizeof(configurationUpdateFilename));
+
+      // The error has been corrected, so clear the error indication.
+      error = 0;
     } else {
       return error;
     }
