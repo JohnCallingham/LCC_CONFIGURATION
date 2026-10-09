@@ -1,0 +1,93 @@
+{
+  "File":
+  {
+    "Location": "//diskstation3/web/LCC_Configuration",
+    "Version": "V1.0.0",
+    "Last update date": "2026-10-09",
+    "Comment": "Working version"
+  },
+
+  "Boards":
+  [
+    {
+      "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "Path": "http://diskstation3/LCC_Configuration/Firmware/ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "Filename": "firmware.bin"
+    },
+    {
+      "Board": "ESP32_6TOTI_WiFi",
+      "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_6TOTI_WiFi/main/firmware",
+      "Filename": "firmware.bin"
+    },
+    {
+      "Board": "ESP32_4ToF_WiFi",
+      "Path": "",
+      "Filename": "firmware.bin"
+    }
+  ],
+  "Configurations":
+  [
+    {
+      "MAC_Address": "48:CA:43:2E:FC:64",
+      "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "NodeID": "05.01.01.01.91.07",
+      "Update": {
+        "Version": "1.2.1",
+        "Path": "http://diskstation3/LCC_Configuration/Firmware/ESP32_2Servo_2Frog_2TOTI_WiFi",
+        "Filename": "firmware.bin"
+      },
+      "JMRI_name": "Dorset"
+    },
+    {
+      "MAC_Address": "48:CA:43:2E:FD:08",
+      "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "NodeID": "05.01.01.01.91.08",
+      "Update": {
+        "Version": "1.2.1"
+      },
+      "JMRI_name": "Dorset"
+    },
+    {
+      "MAC_Address": "74:4D:BD:A0:FC:5C",
+      "Board": "ESP32_2Servo_2Frog_2TOTI_WiFi",
+      "NodeID": "05.01.01.01.91.09",
+      "Update": {
+        "Version": "1.2.1"
+      },
+      "JMRI_name": "Dorset"
+    },
+    {
+      "MAC_Address": "3C:84:27:C4:A7:B8",
+      "Board": "ESP32_6TOTI_WiFi",
+      "NodeID": "05.01.01.01.91.0A",
+      "Update": {
+        "Version": "1.1.0",
+        "Path": "https://raw.githubusercontent.com/JohnCallingham/ESP32_6TOTI_WiFi/main/firmware",
+        "Filename": "firmware.bin"
+      },
+      "JMRI_name": "Dorset"
+    },
+    {
+      "MAC_Address": "20:6E:F1:33:93:84",
+      "Board": "ESP32_4ToF_WiFi",
+      "NodeID": "05.01.01.01.91.05",
+      "Update": {
+        "Version": "1.0.0",
+        "Path": "",
+        "Filename": ""
+      },
+      "JMRI_name": "Dorset"
+    },
+    {
+      "MAC_Address": "E8:F6:0A:C0:7C:7C",
+      "Board": "2Servo test",
+      "NodeID": "05.01.01.01.91.0B",
+      "Update": {
+        "Version": "1.2.1",
+        "Path": "http://diskstation3/LCC_Configuration/Firmware/ESP32_2Servo_2Frog_2TOTI_WiFi",
+        "Filename": "firmware.bin"
+      },
+      "JMRI_name": "Dorset"
+    }
+  ]
+}
