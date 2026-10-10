@@ -308,6 +308,12 @@ void ConfigurationOTA::checkForFirmwareUpdate(String swVersion) {
 
   int error = doFirmwareUpdate(updateURL);
 
+  // If error then try again with a lower case 'v'.
+  if (error ==-1) {
+    sprintf(updateURL, "%s/v%s/%s", configurationUpdatePath, configurationUpdateVersion, configurationUpdateFilename);
+    error = doFirmwareUpdate(updateURL);
+  }
+
   Serial.printf("\n%6ld [checkForFirmwareUpdate] Exiting", millis());
 }
 
