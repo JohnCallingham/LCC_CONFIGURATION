@@ -32,6 +32,9 @@ class ConfigurationOTA {
   public:
     void doConfiguration();
 
+    // Download the configuration for a specified MAC address.
+    void getConfiguration();
+
     // Getter methods
     const char* board() { return configurationBoard; }
     NodeID nodeID();

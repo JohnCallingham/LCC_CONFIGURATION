@@ -1,6 +1,10 @@
 #include "configurationOTA.h"
 #include "configurationPreferences.h"
 
+void ConfigurationOTA::getConfiguration() {
+  
+}
+
 void ConfigurationOTA::doConfiguration() {
   int error = downloadConfiguration();
 
