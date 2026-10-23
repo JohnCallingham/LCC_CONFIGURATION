@@ -27,13 +27,30 @@
 #include <Update.h>
 #include <WiFi.h>
 #include "NodeID.h"
+#include <vector>
+
+/**
+ * Add code whem mac address found to go through all keys. If value is string or int add to vector.
+ * If value is an object, i.e curly braces, then add each object's value to vector.
+ * Key is, e.g. Update/Path
+ * If key is "Board" use the value to lookup in Boards section.
+ * Add to vector, key is, e.g. Board/Path.
+ * Also add the Board value with key Board.
+ */
 
 class ConfigurationOTA {
   public:
-    void doConfiguration();
+    /**
+     * Can be called after setKeyValuePairs().
+     * Returns the value for the specified key.
+     * Returns an empty String if key does not exist.
+     */
+    String getValueByKey(String key);
 
-    // Download the configuration for a specified MAC address.
-    void getConfiguration();
+    /**
+     * The original code for downloading configuration parameters.
+     */
+    void doConfiguration();
 
     // Getter methods
     const char* board() { return configurationBoard; }
@@ -57,6 +74,23 @@ class ConfigurationOTA {
   private:
     JsonDocument docCredentials;
     JsonDocument docConfigurations;
+
+    /**
+     * Called from existing code when a matching Configuration section has been found for
+     *  the current node's MAC address.
+     * Populates a vector of key/value pairs.
+     * elemConfiguration contains all the key/value pairs for the node we are interested in.
+     */
+    void setKeyValuePairs(JsonObject elemConfiguration, const char* prefix = "");
+
+    void displayKeyValuePairs(); // for testing
+
+    struct KeyValuePair {
+      const char* prefix; // Used when the value is a second level value.
+      const char* key;
+      const char* value;
+    };
+    std::vector<KeyValuePair> keyValuePairs;
 
     int downloadConfiguration();
     void checkForFirmwareUpdate(String swVersion);

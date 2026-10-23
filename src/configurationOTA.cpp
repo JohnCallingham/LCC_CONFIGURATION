@@ -1,8 +1,52 @@
 #include "configurationOTA.h"
 #include "configurationPreferences.h"
 
-void ConfigurationOTA::getConfiguration() {
-  
+void ConfigurationOTA::setKeyValuePairs(JsonObject elemConfiguration, const char* prefix) {
+  /**
+   * Iterate over each key storing it with its value in the vector.
+   * If the value is a JSON object then store those key/value pairs.
+   * If the key is 'Board' then attempt to find a matching Boards section.
+   */
+  for (JsonPair keyValue : elemConfiguration) {
+    const char* key = keyValue.key().c_str();
+    JsonVariant value = keyValue.value();
+
+    if (value.is<JsonObject>()) {
+      // Convert value to a JsonObject and recursively call this function.
+      // Also, pass the key in so that it can be part of the recursive keys.
+      setKeyValuePairs(value.as<JsonObject>(), key);
+    } else {
+      // Store this key/value pair in the vector.
+      KeyValuePair keyValuePair;
+      keyValuePair.prefix = prefix;
+      keyValuePair.key = key;
+      keyValuePair.value = value.as<const char *>();
+      keyValuePairs.push_back(keyValuePair);
+
+      // Check for a key of 'Board' only if this is a top level value.
+      if ((strlen(prefix) == 0) && (strcmp(key, "Board")) == 0) {
+        // This is a key of 'Board' so attempt to locate the matching record in the 'Boards' section of the JSON document.
+        for (JsonObject elemBoard : docConfigurations["Boards"].as<JsonArray>()) {
+          if (elemBoard["Board"] == value.as<String>()) {
+            // Found a matching 'Boards' section, so recursively call this function.
+            setKeyValuePairs(elemBoard, "Board");
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+void ConfigurationOTA::displayKeyValuePairs() {
+  // for testing - display all key value pairs
+  for (KeyValuePair keyValuePair : keyValuePairs) {
+    if (strlen(keyValuePair.prefix) == 0) {
+      Serial.printf("\nkey='%s', value='%s'", keyValuePair.key, keyValuePair.value);
+    } else {
+      Serial.printf("\nkey='%s/%s', value='%s'", keyValuePair.prefix, keyValuePair.key, keyValuePair.value);
+    }
+  }
 }
 
 void ConfigurationOTA::doConfiguration() {
@@ -149,6 +193,12 @@ int ConfigurationOTA::processConfiguration(JsonObject elemConfiguration) {
 
   // This is the configuration record for this node.
   Serial.printf("\n%6ld [processConfiguration] Found matching MAC address: %s", millis(), elemConfiguration["MAC_Address"].as<const char *>());
+
+  /**
+   * This is where we need to build a vector of all key/value pairs.
+   */
+  setKeyValuePairs(elemConfiguration);
+  displayKeyValuePairs(); // for testing
 
   /**
    * We need to find the Boards record which matches the configurationBoard value.
