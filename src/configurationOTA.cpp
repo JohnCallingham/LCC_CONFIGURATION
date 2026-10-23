@@ -23,7 +23,7 @@ void ConfigurationOTA::setKeyValuePairs(JsonObject elemConfiguration, const char
       keyValuePair.value = value.as<const char *>();
       keyValuePairs.push_back(keyValuePair);
 
-      // Check for a key of 'Board' only if this is a top level value.
+      // If this is a top level value then check for a key of 'Board'.
       if ((strlen(prefix) == 0) && (strcmp(key, "Board")) == 0) {
         // This is a key of 'Board' so attempt to locate the matching record in the 'Boards' section of the JSON document.
         for (JsonObject elemBoard : docConfigurations["Boards"].as<JsonArray>()) {
@@ -47,6 +47,27 @@ void ConfigurationOTA::displayKeyValuePairs() {
       Serial.printf("\nkey='%s/%s', value='%s'", keyValuePair.prefix, keyValuePair.key, keyValuePair.value);
     }
   }
+}
+
+const char* ConfigurationOTA::getValueByKey(const char* key, const char* prefix) {
+  // key could be 'Board' or 'Board/Board'.
+
+  for (KeyValuePair keyValuePair : keyValuePairs) {
+    if (strlen(prefix) == 0) {
+      // No prefix, so just match the key.
+      if (strcmp(keyValuePair.key, key) == 0) {
+        return keyValuePair.value;
+      }
+    } else {
+      // Must match the prefix and key.
+      if ((strcmp(keyValuePair.key, key) == 0) && (strcmp(keyValuePair.prefix, prefix) == 0)) {
+        return keyValuePair.value;
+      }
+    }
+  }
+
+  // No match found, so return an empty string.
+  return "";
 }
 
 void ConfigurationOTA::doConfiguration() {

@@ -41,11 +41,11 @@
 class ConfigurationOTA {
   public:
     /**
-     * Can be called after setKeyValuePairs().
+     * Need to have called setKeyValuePairs() before calling this function.
      * Returns the value for the specified key.
-     * Returns an empty String if key does not exist.
+     * Returns an empty string if key does not exist.
      */
-    String getValueByKey(String key);
+    const char* getValueByKey(const char* key, const char* prefix = "");
 
     /**
      * The original code for downloading configuration parameters.
